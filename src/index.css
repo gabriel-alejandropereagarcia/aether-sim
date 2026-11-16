@@ -1,0 +1,117 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    background-color: #04070d;
+    color: #f1f5f9;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Custom Aerospace Telemetry Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080e1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Leaflet Telemetry Overrides */
+.leaflet-container {
+  background: #050a14 !important;
+  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(4, 7, 13, 0.85) !important;
+  color: #64748b !important;
+  font-size: 9px !important;
+  border-top-left-radius: 4px;
+}
+
+.leaflet-control-attribution a {
+  color: #38bdf8 !important;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: #0b1220 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #1e293b;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+}
+
+/* Telemetry Grid Background */
+.telemetry-grid {
+  background-image:
+    linear-gradient(to right, rgba(30, 41, 59, 0.28) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.28) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Custom Range Slider */
+input[type='range'].aerospace-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: #1e293b;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type='range'].aerospace-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #22d3ee;
+  border: 2px solid #04070d;
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+input[type='range'].aerospace-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  body.printing-deck #app-shell {
+    display: none !important;
+  }
+  body.printing-deck #pitch-deck-modal {
+    position: static !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+  body.printing-deck #pitch-deck-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+}
