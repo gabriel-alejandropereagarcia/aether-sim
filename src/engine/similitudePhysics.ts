@@ -259,7 +259,7 @@ export function computeBekkerWongSinkageMm(
 }
 
 /**
- * Pandolf, Givoni & Goldman (1977) metabolic cost (kcal/hr) with Santee et al. (2001)
+ * Pandolf, Givoni & Goldman (1977) metabolic cost (kcal/hr) with partial-gravity
  * partial-gravity load scaling for an EVA astronaut (75 kg body + 120 kg Earth suit mass).
  */
 export function computePandolfEvaKcalPerHr(
@@ -596,7 +596,7 @@ export function computeTraverseComparison(
     const targetRoverWhPerKm = Number(((targetForceN * 1000) / (3600 * mechEff) + hotelWhPerKm).toFixed(1));
     const earthRoverWhPerKm = Number(((earthForceN * 1000) / (3600 * mechEff) + hotelWhPerKm).toFixed(1));
 
-    // Pandolf (1977)-based + Santee (2001) EVA metabolic load (decoupled from rover hardware mass)
+    // Pandolf et al. (1977) with partial-gravity load scaling: EVA metabolic load (decoupled from rover hardware mass)
     const suitMass = hardware.systemType === 'EVA_SUIT' ? hardware.massKg : 120;
     const targetEvaKcalPerHr = computePandolfEvaKcalPerHr(
       tPt.slopeDeg,

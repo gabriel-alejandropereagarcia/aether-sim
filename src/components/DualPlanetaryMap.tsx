@@ -631,7 +631,7 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
 
             <form
               onSubmit={handleManualProbeSubmit}
-              className="absolute bottom-2.5 left-2.5 z-[400] flex items-center gap-1.5 rounded-md border border-slate-700/90 bg-slate-950/92 p-1.5 backdrop-blur"
+              className="absolute bottom-2.5 left-2.5 z-[400] flex items-center gap-1.5 rounded-md border border-slate-700/90 bg-slate-950 p-1.5"
             >
               <MapPin className="h-3.5 w-3.5 text-cyan-400" />
               <input
@@ -658,7 +658,7 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
               />
               <button
                 type="submit"
-                className="flex items-center gap-1 rounded bg-cyan-500/20 px-2 py-0.5 font-mono text-[10px] font-semibold text-cyan-300 hover:bg-cyan-500/30"
+                className="flex items-center gap-1 rounded bg-cyan-400 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-950 hover:bg-cyan-300"
               >
                 <Search className="h-3 w-3" />
                 Probe

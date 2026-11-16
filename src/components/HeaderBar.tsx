@@ -141,7 +141,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <div className="hidden items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-2.5 py-1.5 xl:flex">
             <Activity className="h-3.5 w-3.5 text-emerald-400" />
             <span className="font-mono text-[11px] text-emerald-300">
-              HEURISTIC SIMILARITY INDEX: <strong>{calibratedFidelity.toFixed(1)}%</strong>
+              POST-RIG CALIBRATION INDEX: <strong>{calibratedFidelity.toFixed(1)}%</strong>
             </span>
           </div>
 
