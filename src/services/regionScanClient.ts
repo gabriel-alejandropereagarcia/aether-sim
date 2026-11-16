@@ -88,7 +88,9 @@ async function fetchJsonWithTimeout(
   const timer = globalThis.setTimeout(() => controller.abort(), timeoutMs);
   try {
     const res = await fetchImpl(url, { signal: controller.signal, headers: { Accept: 'application/json' } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      throw new HttpError(res.status, parseRetryAfterMs(res.headers?.get?.('Retry-After') ?? null));
+    }
     return await res.json();
   } catch (err) {
     if (outer?.aborted) throw abortError();
@@ -97,6 +99,75 @@ async function fetchJsonWithTimeout(
   } finally {
     globalThis.clearTimeout(timer);
     outer?.removeEventListener('abort', onAbort);
+  }
+}
+
+/** HTTP failure carrying the status and an optional server-provided Retry-After (ms). */
+class HttpError extends Error {
+  constructor(
+    public readonly status: number,
+    public readonly retryAfterMs: number | null,
+  ) {
+    super(`HTTP ${status}`);
+    this.name = 'HttpError';
+  }
+}
+
+export const RETRY_MAX_WAIT_MS = 15000;
+const OPEN_METEO_BACKOFF_MS = [2000, 5000, 10000];
+
+function parseRetryAfterMs(value: string | null): number | null {
+  if (!value) return null;
+  const secs = Number(value);
+  if (Number.isFinite(secs) && secs >= 0) return secs * 1000;
+  const date = Date.parse(value);
+  return Number.isFinite(date) ? Math.max(0, date - Date.now()) : null;
+}
+
+/** Abortable sleep; rejects with AbortError as soon as the signal fires. */
+function sleep(ms: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) return reject(abortError());
+    const onAbort = () => {
+      globalThis.clearTimeout(timer);
+      reject(abortError());
+    };
+    const timer = globalThis.setTimeout(() => {
+      signal?.removeEventListener('abort', onAbort);
+      resolve();
+    }, ms);
+    signal?.addEventListener('abort', onAbort, { once: true });
+  });
+}
+
+/** Transient = network error, timeout or 5xx (optionally 429). Never an aborted request. */
+function isTransient(err: unknown, retry429: boolean): boolean {
+  const e = err as Error;
+  if (e?.name === 'AbortError') return false;
+  if (err instanceof HttpError) return err.status >= 500 || (retry429 && err.status === 429);
+  return e instanceof TypeError || /^timeout after/.test(e?.message ?? '');
+}
+
+/**
+ * Runs `fn`, retrying transient failures with exponential backoff + jitter.
+ * `backoffMs[i]` is the base wait before retry i+1; Retry-After is honoured (capped at 15 s).
+ */
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  backoffMs: number[],
+  retry429: boolean,
+  signal?: AbortSignal,
+): Promise<T> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (signal?.aborted) throw abortError();
+      if (attempt >= backoffMs.length || !isTransient(err, retry429)) throw err;
+      const retryAfter = err instanceof HttpError ? err.retryAfterMs : null;
+      const jittered = backoffMs[attempt] * (0.8 + Math.random() * 0.4);
+      await sleep(Math.min(RETRY_MAX_WAIT_MS, Math.max(retryAfter ?? 0, jittered)), signal);
+    }
   }
 }
 
@@ -121,7 +192,12 @@ async function fetchDemSamples(
       `${OPEN_METEO_ELEVATION_URL}?latitude=${chunk.map((c) => c.lat).join(',')}` +
       `&longitude=${chunk.map((c) => c.lon).join(',')}`;
     try {
-      const json = (await fetchJsonWithTimeout(url, opts.timeoutMs, opts.signal, opts.fetchImpl)) as {
+      const json = (await withRetry(
+        () => fetchJsonWithTimeout(url, opts.timeoutMs, opts.signal, opts.fetchImpl),
+        OPEN_METEO_BACKOFF_MS.slice(0, 2),
+        true,
+        opts.signal,
+      )) as {
         elevation?: unknown[];
       };
       if (!Array.isArray(json?.elevation) || json.elevation.length !== chunk.length) {
@@ -198,11 +274,12 @@ export async function scanRegionLive(options: RegionScanOptions): Promise<Region
     concurrency,
     async (cell) => {
       try {
-        const json = await fetchJsonWithTimeout(
-          buildNasaPowerClimatologyUrl(cell.lat, cell.lon),
-          timeoutMs,
+        const powerUrl = buildNasaPowerClimatologyUrl(cell.lat, cell.lon);
+        const json = await withRetry(
+          () => fetchJsonWithTimeout(powerUrl, timeoutMs, signal, fetchImpl),
+          [1500],
+          false,
           signal,
-          fetchImpl,
         );
         const parsed = parseNasaPowerClimatologyStrict(json);
         if (!parsed) throw new Error('missing/fill values in POWER payload');

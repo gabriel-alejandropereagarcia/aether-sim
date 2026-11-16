@@ -6,10 +6,10 @@
 
 /* ===== Field-notebook / survey-chart theme ===== */
 :root {
-  --paper: #efe8d6;
-  --card: #f8f3e6;
-  --ink: #17130f;
-  --rust: #c54821;
+  --paper: #eef4fb;
+  --card: #ffffff;
+  --ink: #0a1424;
+  --rust: #1a66a8;
   --pine: #1a775e;
 }
 
@@ -18,17 +18,19 @@
   body {
     background-color: var(--paper);
     color: var(--ink);
-    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Chivo', system-ui, -apple-system, sans-serif;
   }
   h1,
   h2,
   h3 {
-    font-family: 'Fraunces', Georgia, serif;
-    letter-spacing: -0.01em;
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-stretch: 118%;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
   }
   h2 {
-    font-size: 1.25rem !important;
-    font-weight: 700;
+    font-size: 1.05rem !important;
   }
 }
 
@@ -36,7 +38,7 @@
 #app-shell section {
   border-radius: 0 !important;
   border: 1.5px solid var(--ink) !important;
-  box-shadow: 6px 6px 0 var(--ink) !important;
+  box-shadow: 6px 6px 0 #74acdf !important;
   background-color: var(--card) !important;
 }
 
@@ -83,7 +85,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a69a89;
+  background: #74acdf;
   border-radius: 0;
 }
 
@@ -94,12 +96,12 @@
 /* Leaflet */
 .leaflet-container {
   background: #1b1f24 !important;
-  font-family: 'IBM Plex Mono', ui-monospace, monospace !important;
+  font-family: 'Chivo Mono', ui-monospace, monospace !important;
 }
 
 .leaflet-control-attribution {
   background: rgba(248, 243, 230, 0.9) !important;
-  color: #453d33 !important;
+  color: #2b3e58 !important;
   font-size: 9px !important;
 }
 
@@ -124,10 +126,10 @@
 /* Graph-paper background */
 .telemetry-grid {
   background-image:
-    linear-gradient(to right, rgba(197, 72, 33, 0.09) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(197, 72, 33, 0.09) 1px, transparent 1px),
-    linear-gradient(to right, rgba(23, 19, 15, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(23, 19, 15, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(116, 172, 223, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(116, 172, 223, 0.22) 1px, transparent 1px),
+    linear-gradient(to right, rgba(10, 20, 36, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 20, 36, 0.045) 1px, transparent 1px);
   background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
 }
 
@@ -160,7 +162,7 @@ input[type='range'].aerospace-slider::-webkit-slider-thumb:hover {
 @media print {
   body {
     background: #ffffff !important;
-    color: #17130f !important;
+    color: #0a1424 !important;
   }
   .no-print {
     display: none !important;
@@ -171,12 +173,35 @@ input[type='range'].aerospace-slider::-webkit-slider-thumb:hover {
   body.printing-deck #pitch-deck-modal {
     position: static !important;
     background: #ffffff !important;
-    color: #17130f !important;
+    color: #0a1424 !important;
   }
   body.printing-deck #pitch-deck-card {
     background: #ffffff !important;
-    color: #17130f !important;
-    border: 1px solid #453d33 !important;
+    color: #0a1424 !important;
+    border: 1px solid #2b3e58 !important;
     box-shadow: none !important;
   }
+}
+
+/* Argentine flag band (celeste / white / celeste) with Sol de Mayo gold marker */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 9px;
+  z-index: 2000;
+  background:
+    radial-gradient(circle at 50% 50%, #f6b40e 0 3.5px, transparent 4px),
+    linear-gradient(to bottom, #74acdf 0 3px, #ffffff 3px 6px, #74acdf 6px 9px);
+  pointer-events: none;
+}
+#app-shell header {
+  margin-top: 9px;
+  background: #ffffff !important;
+}
+/* Poncho salteño accent: red rule with black edge under each module title block */
+#app-shell section > div:first-child {
+  border-bottom: 3px solid #9b1b1e;
+  box-shadow: 0 2px 0 #0a1424;
+  padding-bottom: 10px;
 }

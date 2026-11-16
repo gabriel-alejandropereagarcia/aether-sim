@@ -85,7 +85,7 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
   });
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-[#f8f3e6]/95 p-4 shadow-xl">
+    <section className="rounded-xl border border-slate-800 bg-[#ffffff]/95 p-4 shadow-xl">
       {/* Header */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>
@@ -153,12 +153,12 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
             >
               <defs>
                 <linearGradient id="targetGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1a775e" stopOpacity="0.30" />
-                  <stop offset="100%" stopColor="#1a775e" stopOpacity="0.02" />
+                  <stop offset="0%" stopColor="#c58a00" stopOpacity="0.30" />
+                  <stop offset="100%" stopColor="#c58a00" stopOpacity="0.02" />
                 </linearGradient>
                 <linearGradient id="earthGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#c54821" stopOpacity="0.28" />
-                  <stop offset="100%" stopColor="#c54821" stopOpacity="0.02" />
+                  <stop offset="0%" stopColor="#1a66a8" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="#1a66a8" stopOpacity="0.02" />
                 </linearGradient>
               </defs>
 
@@ -170,7 +170,7 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
                     y1={tick.y}
                     x2={width - padRight}
                     y2={tick.y}
-                    stroke="#cfc4ae"
+                    stroke="#c6d5e8"
                     strokeDasharray="3 3"
                     strokeWidth="1"
                   />
@@ -178,7 +178,7 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
                     x={padLeft - 8}
                     y={tick.y + 3.5}
                     textAnchor="end"
-                    fill="#665c50"
+                    fill="#4c5f7a"
                     fontSize="10"
                     fontFamily="monospace"
                   >
@@ -199,14 +199,14 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
                       y1={padTop}
                       x2={x}
                       y2={padTop + plotH}
-                      stroke="#f8f3e6"
+                      stroke="#ffffff"
                       strokeWidth="1"
                     />
                     <text
                       x={x}
                       y={height - 10}
                       textAnchor="middle"
-                      fill="#665c50"
+                      fill="#4c5f7a"
                       fontSize="10"
                       fontFamily="monospace"
                     >
@@ -223,13 +223,13 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
               {/* Lines */}
               <polyline
                 fill="none"
-                stroke="#1a775e"
+                stroke="#c58a00"
                 strokeWidth="2.5"
                 points={buildPolyline(targetSeries)}
               />
               <polyline
                 fill="none"
-                stroke="#c54821"
+                stroke="#1a66a8"
                 strokeWidth="2.5"
                 strokeDasharray="5 3"
                 points={buildPolyline(earthSeries)}
@@ -241,7 +241,7 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
                 y1={padTop}
                 x2={xFor(hoverIdx)}
                 y2={padTop + plotH}
-                stroke="#453d33"
+                stroke="#2b3e58"
                 strokeWidth="1"
                 strokeDasharray="2 2"
               />
@@ -249,16 +249,16 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
                 cx={xFor(hoverIdx)}
                 cy={yFor(targetSeries[hoverIdx])}
                 r="5"
-                fill="#1a775e"
-                stroke="#efe8d6"
+                fill="#c58a00"
+                stroke="#eef4fb"
                 strokeWidth="1.5"
               />
               <circle
                 cx={xFor(hoverIdx)}
                 cy={yFor(earthSeries[hoverIdx])}
                 r="5"
-                fill="#c54821"
-                stroke="#efe8d6"
+                fill="#1a66a8"
+                stroke="#eef4fb"
                 strokeWidth="1.5"
               />
 

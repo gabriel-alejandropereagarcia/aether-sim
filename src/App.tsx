@@ -284,7 +284,7 @@ export const App: React.FC = () => {
   }, [isDeckTab]);
 
   return (
-    <div className="min-h-screen bg-[#efe8d6] text-slate-100 telemetry-grid">
+    <div className="min-h-screen bg-[#eef4fb] text-slate-100 telemetry-grid">
       <div id="app-shell" style={isDeckTab ? { display: 'none' } : undefined}>
         <HeaderBar
           targets={PLANETARY_TARGETS}
@@ -375,7 +375,7 @@ export const App: React.FC = () => {
         </main>
 
         {/* Compliance & Transparency Footer */}
-        <footer className="mt-6 border-t border-slate-800/90 bg-[#e8dfcb] px-4 py-4">
+        <footer className="mt-6 border-t border-slate-800/90 bg-[#ffffff] px-4 py-4">
           <div className="mx-auto flex max-w-[1640px] flex-col justify-between gap-2 text-xs text-slate-400 md:flex-row md:items-center">
             <div>
               <p className="font-mono text-[11px] font-semibold text-slate-200">

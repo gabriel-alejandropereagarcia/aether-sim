@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-// "Field notebook" theme: the default dark palettes are remapped to inverted
+// "Celeste y blanco" theme (Argentine flag blue, Sol de Mayo gold, poncho salteño red): the default dark palettes are remapped to inverted
 // paper-and-ink scales (light shades become dark ink, dark shades become paper tints),
 // so every existing utility class renders in the survey-chart look.
 const ink = {
@@ -35,9 +35,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
-        sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['"Fraunces"', 'Georgia', 'serif'],
+        mono: ['"Chivo Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        sans: ['"Chivo"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Archivo"', 'system-ui', 'sans-serif'],
       },
       colors: {
         slate: ink,

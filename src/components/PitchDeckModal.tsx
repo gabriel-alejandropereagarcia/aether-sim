@@ -267,7 +267,7 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({
   return (
     <div
       id="pitch-deck-modal"
-      className="fixed inset-0 z-50 flex flex-col bg-[#efe8d6]/98 text-slate-100 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex flex-col bg-[#eef4fb]/98 text-slate-100 backdrop-blur-md"
     >
       {/* Top Deck Toolbar */}
       <div className="no-print flex items-center justify-between border-b border-slate-800 bg-slate-950/90 px-5 py-3">
@@ -318,7 +318,7 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({
       <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-8">
         <div
           id="pitch-deck-card"
-          className="telemetry-grid w-full max-w-5xl rounded-2xl border border-slate-800 bg-[#f8f3e6] p-6 shadow-2xl sm:p-10"
+          className="telemetry-grid w-full max-w-5xl rounded-2xl border border-slate-800 bg-[#ffffff] p-6 shadow-2xl sm:p-10"
         >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span className="rounded bg-cyan-500/15 px-3 py-1 font-mono text-xs font-bold tracking-widest text-cyan-300">
