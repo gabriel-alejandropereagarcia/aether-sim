@@ -535,7 +535,7 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
   const lapseOffsetM = selectedSite.elevationM - selectedSite.powerGridElevationM;
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-[#080e1a]/95 p-4 shadow-xl">
+    <section className="rounded-xl border border-slate-800 bg-[#f8f3e6]/95 p-4 shadow-xl">
       {/* Module Header */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
         <div>

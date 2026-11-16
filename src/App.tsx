@@ -40,11 +40,17 @@ function downloadTextFile(filename: string, content: string, mimeType: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+// Deck tab deep-link: ?target=<id>&site=<id>#deck carries the current selection into the new tab
+function initialQueryParam(key: string): string | null {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get(key);
+}
+
 export const App: React.FC = () => {
-  const [selectedTargetId, setSelectedTargetId] = useState<string>('mars-jezero');
+  const [selectedTargetId, setSelectedTargetId] = useState<string>(() => initialQueryParam('target') ?? 'mars-jezero');
   const [sites, setSites] = useState<EarthAnalogSite[]>(EARTH_ANALOG_SITES);
   const [probedSites, setProbedSites] = useState<EarthAnalogSite[]>([]);
-  const [selectedSiteId, setSelectedSiteId] = useState<string>('llullaillaco');
+  const [selectedSiteId, setSelectedSiteId] = useState<string>(() => initialQueryParam('site') ?? 'llullaillaco');
 
   const [hardware, setHardware] = useState<HardwareSpecs>({
     systemType: 'ROVER',
@@ -62,10 +68,12 @@ export const App: React.FC = () => {
     'https://power.larc.nasa.gov/api/temporal/climatology/point',
   );
 
-  const [isDeckOpen, setIsDeckOpen] = useState<boolean>(() => {
+  // True when this tab was opened as the standalone deck (…#deck)
+  const [isDeckTab] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return window.location.hash === '#deck' || window.location.pathname.endsWith('/deck');
   });
+  const [isDeckOpen, setIsDeckOpen] = useState<boolean>(isDeckTab);
 
   // Analog Finder: scan overlay for the Earth map + latest Earth map view bounds (ref: no re-render on pan)
   const [scanDisplay, setScanDisplay] = useState<{ bbox: ScanBbox; candidates: MapScanCandidate[] } | null>(null);
@@ -256,23 +264,28 @@ export const App: React.FC = () => {
     triadCampaign,
   ]);
 
+  // The pitch deck lives in its own browser tab so it never overlaps the working app
   const handleOpenDeck = useCallback(() => {
-    setIsDeckOpen(true);
-    if (typeof window !== 'undefined') {
-      window.history.replaceState(null, '', '#deck');
-    }
-  }, []);
+    const curated = sites.some((s) => s.id === selectedSite.id);
+    const query = new URLSearchParams({ target: selectedTarget.id, ...(curated ? { site: selectedSite.id } : {}) });
+    const url = `${window.location.pathname}?${query.toString()}#deck`;
+    const opened = window.open(url, '_blank');
+    if (!opened) setIsDeckOpen(true); // popup blocked: fall back to in-page deck
+  }, [selectedSite.id, selectedTarget.id, sites]);
 
   const handleCloseDeck = useCallback(() => {
-    setIsDeckOpen(false);
-    if (typeof window !== 'undefined' && window.location.hash === '#deck') {
-      window.history.replaceState(null, '', window.location.pathname);
+    if (isDeckTab) {
+      window.close();
+      // Tabs not opened by script cannot close themselves: go back to the app instead
+      window.location.href = window.location.pathname;
+      return;
     }
-  }, []);
+    setIsDeckOpen(false);
+  }, [isDeckTab]);
 
   return (
-    <div className="min-h-screen bg-[#04070d] text-slate-100 telemetry-grid">
-      <div id="app-shell">
+    <div className="min-h-screen bg-[#efe8d6] text-slate-100 telemetry-grid">
+      <div id="app-shell" style={isDeckTab ? { display: 'none' } : undefined}>
         <HeaderBar
           targets={PLANETARY_TARGETS}
           selectedTarget={selectedTarget}
@@ -362,7 +375,7 @@ export const App: React.FC = () => {
         </main>
 
         {/* Compliance & Transparency Footer */}
-        <footer className="mt-6 border-t border-slate-800/90 bg-[#050912] px-4 py-4">
+        <footer className="mt-6 border-t border-slate-800/90 bg-[#e8dfcb] px-4 py-4">
           <div className="mx-auto flex max-w-[1640px] flex-col justify-between gap-2 text-xs text-slate-400 md:flex-row md:items-center">
             <div>
               <p className="font-mono text-[11px] font-semibold text-slate-200">

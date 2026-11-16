@@ -91,7 +91,7 @@ export const PhysicsCalibrationLab: React.FC<PhysicsCalibrationLabProps> = ({
   const sinkPct = (mm: number) => Math.min(100, Math.max(8, (mm / maxSinkageScale) * 100));
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-[#080e1a]/95 p-4 shadow-xl">
+    <section className="rounded-xl border border-slate-800 bg-[#f8f3e6]/95 p-4 shadow-xl">
       {/* Header */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>

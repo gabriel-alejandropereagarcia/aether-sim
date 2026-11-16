@@ -62,7 +62,7 @@ export const SeasonalValidityMatrix: React.FC<SeasonalValidityMatrixProps> = ({
     seasonal.months[selectedMonthIdx] ?? seasonal.bestSingleMonth;
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-[#080e1a]/95 p-4 shadow-xl">
+    <section className="rounded-xl border border-slate-800 bg-[#f8f3e6]/95 p-4 shadow-xl">
       {/* Header */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>

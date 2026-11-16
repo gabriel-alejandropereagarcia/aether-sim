@@ -227,7 +227,7 @@ export const AnalogFinderPanel: React.FC<AnalogFinderPanelProps> = ({
   const progressPct = progress ? Math.round((progress.completed / Math.max(1, progress.total)) * 100) : 0;
 
   return (
-    <section className="rounded-xl border border-slate-800 bg-[#080e1a]/95 p-4 shadow-xl">
+    <section className="rounded-xl border border-slate-800 bg-[#f8f3e6]/95 p-4 shadow-xl">
       {/* Header */}
       <div className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div>

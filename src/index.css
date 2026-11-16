@@ -4,74 +4,140 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== Field-notebook / survey-chart theme ===== */
+:root {
+  --paper: #efe8d6;
+  --card: #f8f3e6;
+  --ink: #17130f;
+  --rust: #c54821;
+  --pine: #1a775e;
+}
+
 @layer base {
   html,
   body {
-    background-color: #04070d;
-    color: #f1f5f9;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: 'Fraunces', Georgia, serif;
+    letter-spacing: -0.01em;
+  }
+  h2 {
+    font-size: 1.25rem !important;
+    font-weight: 700;
   }
 }
 
-/* Custom Aerospace Telemetry Scrollbars */
+/* Hard-edged ink cards with offset shadow instead of soft glowing panels */
+#app-shell section {
+  border-radius: 0 !important;
+  border: 1.5px solid var(--ink) !important;
+  box-shadow: 6px 6px 0 var(--ink) !important;
+  background-color: var(--card) !important;
+}
+
+#app-shell .rounded-xl,
+#app-shell .rounded-lg,
+#app-shell .rounded-md,
+#pitch-deck-modal .rounded-xl,
+#pitch-deck-modal .rounded-lg,
+#pitch-deck-modal .rounded-2xl {
+  border-radius: 2px !important;
+}
+
+#app-shell header {
+  border-bottom: 1.5px solid var(--ink) !important;
+  backdrop-filter: none !important;
+}
+
+#app-shell button {
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+#app-shell button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* Kill neon glows from the previous theme */
+#app-shell [class*='shadow-['] {
+  box-shadow: none;
+}
+
+::selection {
+  background: var(--rust);
+  color: var(--card);
+}
+
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #080e1a;
+  background: var(--paper);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 4px;
+  background: #a69a89;
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: var(--ink);
 }
 
-/* Leaflet Telemetry Overrides */
+/* Leaflet */
 .leaflet-container {
-  background: #050a14 !important;
-  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+  background: #1b1f24 !important;
+  font-family: 'IBM Plex Mono', ui-monospace, monospace !important;
 }
 
 .leaflet-control-attribution {
-  background: rgba(4, 7, 13, 0.85) !important;
-  color: #64748b !important;
+  background: rgba(248, 243, 230, 0.9) !important;
+  color: #453d33 !important;
   font-size: 9px !important;
-  border-top-left-radius: 4px;
 }
 
 .leaflet-control-attribution a {
-  color: #38bdf8 !important;
+  color: var(--rust) !important;
 }
 
 .leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  background: #0b1220 !important;
-  color: #e2e8f0 !important;
-  border: 1px solid #1e293b;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+.leaflet-popup-tip,
+.leaflet-tooltip {
+  background: var(--card) !important;
+  color: var(--ink) !important;
+  border: 1.5px solid var(--ink) !important;
+  border-radius: 0 !important;
+  box-shadow: 3px 3px 0 var(--ink) !important;
 }
 
-/* Telemetry Grid Background */
+.leaflet-tooltip::before {
+  display: none !important;
+}
+
+/* Graph-paper background */
 .telemetry-grid {
   background-image:
-    linear-gradient(to right, rgba(30, 41, 59, 0.28) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(30, 41, 59, 0.28) 1px, transparent 1px);
-  background-size: 28px 28px;
+    linear-gradient(to right, rgba(197, 72, 33, 0.09) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(197, 72, 33, 0.09) 1px, transparent 1px),
+    linear-gradient(to right, rgba(23, 19, 15, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 19, 15, 0.05) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
 }
 
-/* Custom Range Slider */
+/* Range slider */
 input[type='range'].aerospace-slider {
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
-  background: #1e293b;
-  border-radius: 9999px;
+  height: 4px;
+  background: var(--ink);
+  border-radius: 0;
   outline: none;
 }
 
@@ -80,22 +146,21 @@ input[type='range'].aerospace-slider::-webkit-slider-thumb {
   appearance: none;
   width: 16px;
   height: 16px;
-  border-radius: 50%;
-  background: #22d3ee;
-  border: 2px solid #04070d;
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+  border-radius: 0;
+  background: var(--rust);
+  border: 2px solid var(--ink);
   cursor: pointer;
   transition: transform 0.12s ease;
 }
 
 input[type='range'].aerospace-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
+  transform: scale(1.15) rotate(45deg);
 }
 
 @media print {
   body {
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #17130f !important;
   }
   .no-print {
     display: none !important;
@@ -106,12 +171,12 @@ input[type='range'].aerospace-slider::-webkit-slider-thumb:hover {
   body.printing-deck #pitch-deck-modal {
     position: static !important;
     background: #ffffff !important;
-    color: #0f172a !important;
+    color: #17130f !important;
   }
   body.printing-deck #pitch-deck-card {
     background: #ffffff !important;
-    color: #0f172a !important;
-    border: 1px solid #cbd5e1 !important;
+    color: #17130f !important;
+    border: 1px solid #453d33 !important;
     box-shadow: none !important;
   }
 }
