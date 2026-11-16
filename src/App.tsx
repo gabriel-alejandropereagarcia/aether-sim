@@ -3,6 +3,7 @@ import {
   EARTH_ANALOG_SITES,
   EarthAnalogSite,
   PLANETARY_TARGETS,
+  rederiveCuratedFidelityScores,
 } from './data/planetaryData';
 import {
   computeSeasonalValidityMatrix,
@@ -33,7 +34,8 @@ function downloadTextFile(filename: string, content: string, mimeType: string) {
   document.body.appendChild(anchor);
   anchor.click();
   document.body.removeChild(anchor);
-  URL.revokeObjectURL(url);
+  // Defer revocation: some browsers start the download asynchronously after click()
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export const App: React.FC = () => {
@@ -65,6 +67,19 @@ export const App: React.FC = () => {
 
   const probeRequestIdRef = useRef<number>(0);
   const probeAbortRef = useRef<AbortController | null>(null);
+  const siteRefreshAbortRef = useRef<AbortController | null>(null);
+  // Last non-FETCHING status, restored when an in-flight probe is cancelled
+  const settledStatusRef = useRef<'LIVE_NASA_POWER' | 'OFFLINE_FALLBACK'>('OFFLINE_FALLBACK');
+
+  const applyFetchStatus = useCallback(
+    (res: { status: 'LIVE_NASA_POWER' | 'OFFLINE_FALLBACK'; latencyMs: number; endpointUrl: string }) => {
+      settledStatusRef.current = res.status;
+      setPowerStatus(res.status);
+      setPowerLatencyMs(res.latencyMs);
+      setPowerEndpointUrl(res.endpointUrl);
+    },
+    [],
+  );
 
   const selectedTarget = useMemo(
     () => PLANETARY_TARGETS.find((t) => t.id === selectedTargetId) ?? PLANETARY_TARGETS[0],
@@ -84,14 +99,13 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (selectedSite.isCustomProbe) return;
     const controller = new AbortController();
+    siteRefreshAbortRef.current = controller;
     setPowerStatus('FETCHING');
 
     fetchNasaPowerClimatology(selectedSite.lat, selectedSite.lon, selectedSite, controller.signal).then(
       (res) => {
         if (controller.signal.aborted) return;
-        setPowerStatus(res.status);
-        setPowerLatencyMs(res.latencyMs);
-        setPowerEndpointUrl(res.endpointUrl);
+        applyFetchStatus(res);
         if (res.status === 'LIVE_NASA_POWER') {
           setSites((prev) =>
             prev.map((item) =>
@@ -102,6 +116,7 @@ export const App: React.FC = () => {
                     powerGridElevationM: res.powerGridElevationM,
                     climatology: res.climatology,
                     pressureMbar: res.pressureMbar || item.pressureMbar,
+                    fidelityScores: rederiveCuratedFidelityScores(item, res.climatology),
                   }
                 : item,
             ),
@@ -112,12 +127,15 @@ export const App: React.FC = () => {
 
     return () => {
       controller.abort();
+      if (siteRefreshAbortRef.current === controller) siteRefreshAbortRef.current = null;
     };
-  }, [selectedSite.id, selectedSite.isCustomProbe, selectedSite.lat, selectedSite.lon]);
+  }, [selectedSite.id, selectedSite.isCustomProbe, selectedSite.lat, selectedSite.lon, applyFetchStatus]);
 
   // Click-Anywhere Earth Live Probe Handler with AbortController + monotonic requestId race guard
   const handleProbeCoordinate = useCallback(async (lat: number, lon: number) => {
     probeAbortRef.current?.abort();
+    // A probe supersedes any curated-site refresh still in flight
+    siteRefreshAbortRef.current?.abort();
     const controller = new AbortController();
     probeAbortRef.current = controller;
     const reqId = ++probeRequestIdRef.current;
@@ -127,6 +145,11 @@ export const App: React.FC = () => {
     if (controller.signal.aborted || reqId !== probeRequestIdRef.current) {
       return;
     }
+    probeAbortRef.current = null;
+
+    applyFetchStatus(res);
+    // Never select/score a probe built from the synthetic offline grid
+    if (res.status !== 'LIVE_NASA_POWER') return;
 
     const probeSite = createCustomProbeSite(lat, lon, res);
     setProbedSites((prev) => {
@@ -134,13 +157,15 @@ export const App: React.FC = () => {
       return [probeSite, ...filtered].slice(0, 8);
     });
     setSelectedSiteId(probeSite.id);
-    setPowerStatus(res.status);
-    setPowerLatencyMs(res.latencyMs);
-    setPowerEndpointUrl(res.endpointUrl);
-  }, []);
+  }, [applyFetchStatus]);
 
   const handleSelectSite = useCallback((siteId: string) => {
-    probeAbortRef.current?.abort();
+    if (probeAbortRef.current) {
+      probeAbortRef.current.abort();
+      probeAbortRef.current = null;
+      // Clear the FETCHING state of the cancelled probe; a curated refresh (if any) will set its own
+      setPowerStatus(settledStatusRef.current);
+    }
     probeRequestIdRef.current++;
     setSelectedSiteId(siteId);
   }, []);

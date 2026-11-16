@@ -201,7 +201,9 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
 
     const handleClick = (ev: L.LeafletMouseEvent) => {
       if (!liveProbeActive) return;
-      onProbeCoordinate(ev.latlng.lat, ev.latlng.lng);
+      // Wrap longitude into [-180, 180] when clicking a repeated world copy
+      const wrapped = ev.latlng.wrap();
+      onProbeCoordinate(wrapped.lat, wrapped.lng);
     };
 
     map.on('click', handleClick);

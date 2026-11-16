@@ -154,7 +154,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
                   ? 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300'
                   : 'border-cyan-500/30 bg-cyan-950/30 text-cyan-300'
             }`}
-            title="NASA POWER Climatology API status (3500ms timeout with deterministic local fallback)"
+            title="NASA POWER Climatology API status (15 s timeout; offline probes are not scored)"
           >
             {powerStatus === 'FETCHING' ? (
               <Radio className="h-3.5 w-3.5 animate-pulse" />

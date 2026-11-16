@@ -176,25 +176,35 @@ export function applyIsaLapseRateCorrection(
 }
 
 /**
+ * Signed slope (deg) along the direction of travel for 100 m-spaced elevation samples,
+ * using one-sided differences at the ends and central differences inside.
+ * Positive = uphill, negative = downhill.
+ */
+export function computeSignedSlopesDeg(elevationsM: number[]): number[] {
+  const last = elevationsM.length - 1;
+  return elevationsM.map((elev, idx) => {
+    const prevElev = idx > 0 ? elevationsM[idx - 1] : elev;
+    const nextElev = idx < last ? elevationsM[idx + 1] : elev;
+    const dxMeters = idx === 0 || idx === last ? 100 : 200;
+    const deltaElev = nextElev - prevElev;
+    return Number(((Math.atan2(deltaElev, dxMeters) * 180) / Math.PI).toFixed(1));
+  });
+}
+
+/**
  * Constructs a 21-point (0.0 - 2.0 km) traverse from verified GPS coordinates & DEM elevations.
  */
 export function buildTraverseFromCoordsAndElevations(
   points: { distanceKm: number; lat: number; lon: number; elevationM: number }[],
   milestoneLabels: Record<number, string> = {},
 ): TraversePoint[] {
+  const slopes = computeSignedSlopesDeg(points.map((p) => p.elevationM));
   return points.map((pt, idx) => {
-    const prevElev = idx > 0 ? points[idx - 1].elevationM : pt.elevationM;
-    const nextElev = idx < points.length - 1 ? points[idx + 1].elevationM : pt.elevationM;
-    const dxMeters = idx === 0 || idx === points.length - 1 ? 100 : 200;
-    const deltaElev =
-      idx === 0
-        ? nextElev - pt.elevationM
-        : idx === points.length - 1
-          ? pt.elevationM - prevElev
-          : nextElev - prevElev;
-    const slopeDeg = Number(((Math.atan2(Math.abs(deltaElev), dxMeters) * 180) / Math.PI).toFixed(1));
+    const slopeDeg = slopes[idx];
     // Deterministic roughness proxy scaled from local terrain slope gradient
-    const roughnessIndex = Number(Math.min(0.95, Math.max(0.18, 0.24 + slopeDeg * 0.032)).toFixed(2));
+    const roughnessIndex = Number(
+      Math.min(0.95, Math.max(0.18, 0.24 + Math.abs(slopeDeg) * 0.032)).toFixed(2),
+    );
 
     return {
       distanceKm: pt.distanceKm,
@@ -217,14 +227,10 @@ export function buildPlanetaryTraverse(
   roughnessProfile: number[],
   milestoneLabels: Record<number, string> = {},
 ): TraversePoint[] {
+  const slopes = computeSignedSlopesDeg(relativeElevationsM);
   return relativeElevationsM.map((relElev, idx) => {
     const distanceKm = Number((idx * 0.1).toFixed(1));
-    const prevElev = idx > 0 ? relativeElevationsM[idx - 1] : relElev;
-    const nextElev = idx < relativeElevationsM.length - 1 ? relativeElevationsM[idx + 1] : relElev;
-    const dxMeters = idx === 0 || idx === relativeElevationsM.length - 1 ? 100 : 200;
-    const deltaElev =
-      idx === 0 ? nextElev - relElev : idx === relativeElevationsM.length - 1 ? relElev - prevElev : nextElev - prevElev;
-    const slopeDeg = Number(((Math.atan2(Math.abs(deltaElev), dxMeters) * 180) / Math.PI).toFixed(1));
+    const slopeDeg = slopes[idx];
 
     return {
       distanceKm,
@@ -575,7 +581,7 @@ function deriveFidelityScores(
   const meanTempC = climatology.T2M.reduce((a, b) => a + b, 0) / 12;
   const meanPrecip = climatology.PRECTOTCORR.reduce((a, b) => a + b, 0) / 12;
   const meanRh = climatology.RH2M.reduce((a, b) => a + b, 0) / 12;
-  const maxSlope = Math.max(...traverse.map((p) => p.slopeDeg));
+  const maxSlope = Math.max(...traverse.map((p) => Math.abs(p.slopeDeg)));
 
   const altThermalFactor = Math.min(48, (Math.max(0, rawElevM) / 5200) * 48);
   const cryoFactor = meanTempC < 5 ? Math.min(38, (5 - meanTempC) * 1.45) : Math.max(0, 16 - (meanTempC - 5) * 0.7);
@@ -1131,3 +1137,17 @@ export const EARTH_ANALOG_SITES: EarthAnalogSite[] = SITE_SEEDS.map((seed) => {
     dataSourceTag: 'VERIFIED_POWER_AND_COPERNICUS_DEM',
   };
 });
+
+/**
+ * Re-derives 5-axis fidelity scores for a curated site after its climatology is refreshed,
+ * so scores stay consistent with the climate data used by the other modules.
+ * Returns the site's existing scores for non-curated (probe) sites.
+ */
+export function rederiveCuratedFidelityScores(
+  site: EarthAnalogSite,
+  climatology: MonthlyClimatology,
+): EarthAnalogSite['fidelityScores'] {
+  const seed = SITE_SEEDS.find((s) => s.id === site.id);
+  if (!seed) return site.fidelityScores;
+  return deriveFidelityScores(site.elevationM, climatology, site.traverse, seed.geologyClass);
+}

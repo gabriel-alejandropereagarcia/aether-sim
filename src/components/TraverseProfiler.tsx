@@ -61,7 +61,8 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
   const rawMin = Math.min(...allVals);
   const rawMax = Math.max(...allVals);
   const margin = Math.max(4, (rawMax - rawMin) * 0.14);
-  const yMin = chartMode === 'SLOPE' ? 0 : Math.floor(rawMin - margin * 0.4);
+  // Slopes are signed (negative = downhill), so the slope axis must extend below zero too
+  const yMin = chartMode === 'SLOPE' ? Math.min(0, Math.floor(rawMin - margin * 0.4)) : Math.floor(rawMin - margin * 0.4);
   const yMax = Math.ceil(rawMax + margin * 0.6);
   const ySpan = Math.max(1, yMax - yMin);
 

@@ -29,7 +29,9 @@ export interface NasaPowerFetchResult {
   endpointUrl: string;
 }
 
-const API_TIMEOUT_MS = 3500;
+// NASA POWER climatology responses routinely take several seconds; a short timeout
+// would turn slow-but-valid answers into synthetic offline fallbacks.
+export const API_TIMEOUT_MS = 15000;
 
 /**
  * Derives terrain elevation (m) from surface barometric pressure (kPa)
@@ -298,7 +300,7 @@ export function createCustomProbeSite(
   const geoChemScore = Math.round(
     Math.min(92, Math.max(22, 85 - meanPrecip * 14 - Math.max(0, meanRh - 30) * 0.45)),
   );
-  const maxSlope = Math.max(...points.map((p) => p.slopeDeg));
+  const maxSlope = Math.max(...points.map((p) => Math.abs(p.slopeDeg)));
   const geomorScore = Math.round(Math.min(90, Math.max(35, 55 + Math.min(30, maxSlope * 2.1))));
   const mechScore = Math.round(Math.min(88, Math.max(35, 58 + (isHyperArid ? 20 : 4))));
   const astroScore = Math.round(

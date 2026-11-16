@@ -567,13 +567,14 @@ export function computeTraverseComparison(
 
     if (idx > 0) {
       const prevTRel = target.traverse[idx - 1].elevationM - targetBase;
-      const prevERel = (site.traverse[idx - 1]?.elevationM ?? earthBase) - earthBase;
+      const prevEPt = site.traverse[idx - 1] ?? site.traverse[site.traverse.length - 1];
+      const prevERel = prevEPt.elevationM - earthBase;
       if (tRel > prevTRel) targetGainM += tRel - prevTRel;
       if (eRel > prevERel) earthGainM += eRel - prevERel;
     }
 
-    targetMaxSlopeDeg = Math.max(targetMaxSlopeDeg, tPt.slopeDeg);
-    earthMaxSlopeDeg = Math.max(earthMaxSlopeDeg, ePt.slopeDeg);
+    targetMaxSlopeDeg = Math.max(targetMaxSlopeDeg, Math.abs(tPt.slopeDeg));
+    earthMaxSlopeDeg = Math.max(earthMaxSlopeDeg, Math.abs(ePt.slopeDeg));
 
     sqErrSum += (tRel - eRel) ** 2;
     const slopeDiff = Math.abs(tPt.slopeDeg - ePt.slopeDeg);
@@ -587,8 +588,9 @@ export function computeTraverseComparison(
 
     const massForModel = Math.max(25, hardware.massKg);
     const mechEff = 0.68;
-    const targetForceN = massForModel * target.gravityMs2 * (crrTarget + slopeSinT);
-    const earthForceN = massForModel * localEarthGravity * (crrEarth + slopeSinE);
+    // Signed slope: descents reduce tractive demand; no regenerative recovery below zero
+    const targetForceN = massForModel * target.gravityMs2 * Math.max(0, crrTarget + slopeSinT);
+    const earthForceN = massForModel * localEarthGravity * Math.max(0, crrEarth + slopeSinE);
 
     const hotelWhPerKm = Math.max(15, hardware.powerWatts * 0.45);
     const targetRoverWhPerKm = Number(((targetForceN * 1000) / (3600 * mechEff) + hotelWhPerKm).toFixed(1));
@@ -804,7 +806,9 @@ export function optimizeTriadCampaign(
   allSites: EarthAnalogSite[],
 ): TriadCampaignResult {
   const candidates = allSites.filter((s) => s.id !== primarySite.id);
-  const safePool = candidates.length >= 2 ? candidates : allSites;
+  // Never re-use the primary site as a complementary phase while any other site exists
+  const safePool = candidates.length > 0 ? candidates : [primarySite];
+  const hasFullTriad = candidates.length >= 2;
   const weights = SYSTEM_AXIS_WEIGHTS[hardware.systemType];
 
   let bestScore = -1;
@@ -944,7 +948,7 @@ export function optimizeTriadCampaign(
     triadCompositeCoveragePct,
     coverageGainPct: triadCompositeCoveragePct - singleSiteCoveragePct,
     axisCoverage,
-    trlProgressionSummary: `For ${hardware.systemType} testing, pairing ${primarySite.name} (${w1.months.join('/')}) with ${site2.name} (${w2.months.join('/')}) and ${site3.name} (${w3.months.join('/')}) increases weighted 5-axis mission readiness from ${singleSiteCoveragePct}% to ${triadCompositeCoveragePct}% (+${triadCompositeCoveragePct - singleSiteCoveragePct} pts).`,
+    trlProgressionSummary: `${hasFullTriad ? '' : `WARNING: only ${candidates.length} complementary site(s) available; triad phases repeat sites. `}For ${hardware.systemType} testing, pairing ${primarySite.name} (${w1.months.join('/')}) with ${site2.name} (${w2.months.join('/')}) and ${site3.name} (${w3.months.join('/')}) increases weighted 5-axis mission readiness from ${singleSiteCoveragePct}% to ${triadCompositeCoveragePct}% (+${triadCompositeCoveragePct - singleSiteCoveragePct} pts).`,
   };
 }
 
