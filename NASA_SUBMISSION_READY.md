@@ -89,24 +89,26 @@ TypeScript, React 18, Vite, Tailwind CSS, Leaflet, Vitest. Runs entirely in the 
 ## 8. REFERENCES
 
 Planetary and engineering references:
-- Zuber et al. (2012), Nature 486:378, doi:10.1038/nature11216 (lunar topography).
-- Haruyama et al. (2009), Geophysical Research Letters 36:L21206, doi:10.1029/2009GL040635.
-- Robinson et al. (2012), Planetary and Space Science 69:18 (LROC).
-- Campbell et al. (2008), Geology 36:135, doi:10.1130/G24310A.1.
-- Carrier, Olhoeft and Mendell (1991), Lunar Sourcebook, ch. 9.
-- Stack et al. (2020), Space Science Reviews 216:127 (Perseverance).
-- Mangold et al. (2021), Science 374:abj4325, doi:10.1126/science.abj4325.
-- Vasavada (2022), Space Science Reviews 218:14, doi:10.1007/s11214-022-00882-7 (Curiosity).
-- Wong (2008), Theory of Ground Vehicles (Bekker-Wong terramechanics).
-- McAdams (1954), Heat Transmission (convective heat transfer).
-- Pandolf et al. (1977) and Santee et al. (2001), metabolic cost of walking and partial gravity.
+1. Zuber, M. T., Head, J. W., Smith, D. E., Neumann, G. A., et al. (2012). Constraints on the volatile distribution within Shackleton crater at the lunar south pole. Nature 486, 378-381. doi:10.1038/nature11216
+2. Haruyama, J., Hioki, K., Shirao, M., Morota, T., et al. (2009). Possible lunar lava tube skylight observed by SELENE cameras. Geophysical Research Letters 36, L21206. doi:10.1029/2009GL040635
+3. Robinson, M. S., Brylow, S. M., Tschimmel, M., Humm, D., et al. (2010). Lunar Reconnaissance Orbiter Camera (LROC) instrument overview. Space Science Reviews 150, 81-124. doi:10.1007/s11214-010-9634-2
+4. Campbell, B. A., Carter, L. M., Hawke, B. R., Campbell, D. B., et al. (2008). Volcanic and impact deposits of the Moon's Aristarchus Plateau: A new view from Earth-based radar images. Geology 36, 135-138. doi:10.1130/G24310A.1
+5. Carrier, W. D., Olhoeft, G. R., and Mendell, W. (1991). Physical properties of the lunar surface. In Heiken, Vaniman and French (eds.), Lunar Sourcebook, Cambridge University Press, ch. 9.
+6. Vasavada, A. R. (2022). Mission overview and scientific contributions from the Mars Science Laboratory Curiosity rover after eight years of surface operations. Space Science Reviews 218, 14. doi:10.1007/s11214-022-00882-7
+7. Wong, J. Y. (2008). Theory of Ground Vehicles, 4th ed. Wiley (Bekker-Wong terramechanics).
+8. McAdams, W. H. (1954). Heat Transmission, 3rd ed. McGraw-Hill (convective heat transfer).
+9. Pandolf, K. B., Givoni, B., and Goldman, R. F. (1977). Predicting energy expenditure with loads while standing or walking very slowly. Journal of Applied Physiology 43, 577-581. doi:10.1152/jappl.1977.43.4.577
 Earth analog literature:
-- Navarro-Gonzalez et al. (2003), Science 302:1018 (Atacama).
-- Lee and Osinski (2005), Meteoritics and Planetary Science (Haughton-Mars, Devon Island).
-- Xiao et al. (2017), Earth-Science Reviews 164:84 (Qaidam Basin).
-- Amils et al. (2014), Life (Rio Tinto).
-- Belilla et al. (2019), Nature Ecology and Evolution, doi:10.1038/s41559-019-1005-0 (Dallol).
-Please re-check each citation against the original paper before final submission.
+10. Navarro-Gonzalez, R., Rainey, F. A., et al. (2003). Mars-like soils in the Atacama Desert, Chile, and the dry limit of microbial life. Science 302, 1018-1021. doi:10.1126/science.1089143
+11. Lee, P., and Osinski, G. R. (2005). The Haughton-Mars Project: Overview of science investigations at the Haughton impact structure and surrounding terrain, Devon Island, High Arctic. Meteoritics and Planetary Science 40, 1755-1758. doi:10.1111/j.1945-5100.2005.tb00144.x
+12. Xiao, L., Wang, J., Dang, Y., et al. (2017). A new terrestrial analogue site for Mars research: The Qaidam Basin, Tibetan Plateau (NE Tibet). Earth-Science Reviews 164, 84-101. doi:10.1016/j.earscirev.2016.11.003
+13. Amils, R., Fernandez-Remolar, D., and the IPBSL Team (2014). Rio Tinto: A geochemical and mineralogical terrestrial analogue of Mars. Life 4, 511-534. doi:10.3390/life4030511
+14. Belilla, J., Moreira, D., Jardillier, L., Reboul, G., et al. (2019). Hyperdiverse archaea near life limits at the polyextreme geothermal Dallol area. Nature Ecology and Evolution 3, 1552-1561. doi:10.1038/s41559-019-1005-0
+Data and service pages (see sections 6 and 7):
+15. NASA POWER. https://power.larc.nasa.gov/
+16. NASA GIBS. https://www.earthdata.nasa.gov/engage/open-data-services-software/earthdata-developer-portal/gibs-api
+17. NASA Solar System Treks. https://trek.nasa.gov/
+18. Open-Meteo Elevation API (Copernicus DEM GLO-90). https://open-meteo.com/en/docs/elevation-api
 
 
 ## 9. USE OF ARTIFICIAL INTELLIGENCE
