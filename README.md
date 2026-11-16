@@ -1,55 +1,88 @@
-# AETHER-SIM v2.1 — Planetary Analog Similitude, 4D Window & Traverse Twinning Engine
+# AETHER-SIM v2.2: Earth Analog Finder for Moon and Mars
 
-**NASA Space Apps Challenge 2026** | Challenge: *"Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars"*  
+**NASA Space Apps Challenge 2026** | Team ArgentinaSpace | NASA Space Apps Salta 2026
+**Challenge:** *"Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars"*
+**Live demo:** https://gabriel-alejandropereagarcia.github.io/aether-sim/ (add `#deck` to the URL for the 7-slide pitch deck)
 **License:** Apache License 2.0
 
-`AETHER-SIM` is a hackathon engineering MVP that turns planetary analog selection into quantitative similitude calibration, 1:1 traverse comparison, and 4D seasonal window planning for Moon and Mars missions.
+AETHER-SIM identifies and characterizes candidate terrestrial analogs for Moon and Mars surface missions using open NASA and Copernicus data. It is a screening and planning tool built for a hackathon; see Limitations.
 
 ---
 
-## Key Capabilities & Data Provenance
+## Analog Finder (headline feature)
 
-1. **Module 1 — Dual Planetary Command Map & Live NASA POWER + Copernicus DEM Probe**
-   - Synchronized **Earth Analog Map** (Esri Dark Gray Canvas + NASA GIBS WMTS: *Blue Marble Shaded Relief*, *MODIS Land Surface Temp Day*, *ASTER GDEM Shaded Relief*) and **Moon / Mars Target Map** (NASA Moon Trek `LRO_WAC_Mosaic_Global_303ppd_v02` and Mars Trek `Mars_Viking_MDIM21_ClrMosaic_global_232m`, geodesic ellipses scaled by true lunar/Martian radii).
-   - **Verified Earth Telemetry + ISA Lapse-Rate Correction:** Baseline 12-month climatologies and 21-point 2.0 km traverses for all 10 Earth sites are fetched from **NASA POWER** and **ESA Copernicus DEM GLO-90** (`scripts/fetchVerifiedEarthData.mjs` -> `src/data/verifiedEarthTelemetry.json`), with $-6.5^\circ\text{C/km}$ tropospheric lapse-rate and hypsometric barometric correction reconciling `0.5°` weather grid elevation against local DEM elevation.
-   - **Click-Anywhere Live Probe Mode:** Clicking any Earth coordinate queries NASA POWER and Copernicus DEM in parallel (with `AbortController` race cancellation) and retains probed coordinates in the site selector.
+- Scans a region grid (default: **Puna de Atacama, Salta/Catamarca, NW Argentina**; presets for the Atacama in Chile, the Bolivian Altiplano and Iceland; or the current map view).
+- For each cell it pulls **NASA POWER** climatology and **Copernicus GLO-90** elevation (via Open-Meteo) and computes an **Analog Similarity Index** against the selected Moon or Mars target.
+- The index is a **heuristic screening index** with transparent, hand-chosen, target-dependent weights: low pressure, thermal proximity, aridity, diurnal thermal swing, insolation, and terrain slope match.
+- Candidates are ranked, drawn on the map, and flagged **NEW** when they are more than 60 km from any catalogued analog.
+- A bundled Puna scan snapshot loads instantly; **Re-scan live** refreshes it.
+- One click sends a candidate into the characterization pipeline below.
 
-2. **Module 2 — 1:1 Geometric Traverse Twinning Profiler**
-   - Compares real 21-point **2.0 km Copernicus GLO-90 DEM Earth transects** against 2.0 km planetary traverses parameterized from published mission sections (LOLA, LROC NAC, Perseverance Hawksbill Gap, Curiosity Mount Sharp, SHARAD/MOLA).
-   - Computes elevation gain, maximum slope, RMSE, rover energy (`Wh/km`), and **Pandolf et al. (1977)** + **Santee et al. (2001)** partial-gravity crew EVA metabolic cost (`kcal/hr`).
+## Characterization pipeline
 
-3. **Module 3 — The "Earth-Lie" Physics Similitude & Hardware Calibration Lab**
-   - Configures hardware (`Rover / Mobility`, `Cryo-Drill / ISRU`, `Spacesuit EVA`, `GPR / Spectral Sensor`) by mass ($5\text{–}1,000\text{ kg}$), thermal power ($10\text{–}2,000\text{ W}$), contact area ($10\text{–}2,500\text{ cm}^2$), and wheel/contact width $b$ ($4\text{–}80\text{ cm}$).
-   - Computes **WGS84 + Free-Air Gravity Offloading**, **Bekker-Wong Wheel Sinkage ($z_0$)**, **McAdams (1954) Convective Cooling Bias**, residual-based similitude fidelity scores, and 4 explicit unmitigable terrestrial limitations requiring chamber co-tests.
+For any of the 10 curated sites (including Llullaillaco, Salar de Arizaro and Campo de Piedra Pomez in the Argentine Puna), a Finder candidate, or any clicked coordinate:
 
-4. **Module 4 — 4D Seasonal Validity Matrix & Hardware-Weighted Triad Optimizer**
-   - Generates a **12-Month × 5-Discipline Heatmap** under unified thresholds (`>=82%` Peak, `68–81%` Valid, `52–67%` Marginal, `<52%` Invalid).
-   - Solves for a hardware-weighted **3-Site Triad Campaign** (TRL 4 $\rightarrow$ TRL 6) and exports `.md`, `.json`, and printable Field Protocols.
-
----
-
-## Tech Stack & Scope Notes
-- **Frontend:** React 18, TypeScript (strict), Vite, Tailwind CSS, Leaflet, Vitest
-- **Connectivity:** Physics calculations, unit tests, and the 10-site verified baseline dataset run locally offline; interactive map tile layers (GIBS, Esri, Moon/Mars Trek) and live custom coordinate probing require network access.
+1. **Dual map:** Earth (NASA GIBS layers) beside the Moon or Mars target (NASA Moon Trek / Mars Trek WMTS).
+2. **2 km traverse comparison:** real Copernicus DEM transect on Earth against a real planetary profile sampled from the LRO LOLA (118 m/px) or MGS MOLA (463 m/px) global DEM (elevation gain, maximum slope, RMSE, rover energy, crew EVA energy).
+3. **Physics calibration lab (first-order models):** local gravity offload, Bekker-Wong wheel sinkage, McAdams convective bias.
+4. **12-month seasonal validity matrix:** NASA POWER climatology with ISA lapse-rate correction across five disciplines.
+5. **3-site campaign optimizer** and Markdown/JSON protocol export.
+6. **7-slide pitch deck** with speaker notes (about 3 minutes).
 
 ---
 
-## Local Development, Data Refresh & Verification
+## Quick start
 
 ```bash
 npm install
-npm test
+npm run dev        # local dev server
+npm test           # unit tests (Vitest)
 npm run typecheck
-npm run build
-npm run dev
+npm run build      # production build to dist/
 ```
 
-To refresh the verified Earth telemetry baseline from live NASA POWER and Copernicus DEM GLO-90 APIs:
+The app is a static site (`base: './'`), so it works under a subpath such as GitHub Pages. A workflow in `.github/workflows/deploy.yml` builds and deploys on every push to `master`.
+
+To refresh the bundled Earth baseline data from the live APIs:
+
 ```bash
 node scripts/fetchVerifiedEarthData.mjs
 ```
 
----
+## Data sources
 
-## Submission Package
-Copy-ready submission fields, DOIs, and transparency notes are located in [`NASA_SUBMISSION_READY.md`](./NASA_SUBMISSION_READY.md).
+| Source | Use |
+| --- | --- |
+| NASA POWER (climatology point API) | Temperature, humidity, precipitation, pressure, insolation |
+| NASA GIBS (WMTS) | Earth imagery layers |
+| NASA Moon Trek and Mars Trek (WMTS) | Moon and Mars imagery |
+| ESA Copernicus DEM GLO-90 via Open-Meteo | Elevation, slope, traverse transects |
+| LRO LOLA global LDEM 118 m/px and MGS MOLA MEGDR 463 m/px (USGS Astrogeology mosaics) | Real 2 km planetary elevation profiles (baked by `scripts/fetchPlanetaryProfiles.mjs`) |
+| Published literature (terramechanics, roughness, EVA metabolic models) | Regolith parameters and physics models |
+
+"Verified" in this project means only that data were actually fetched from NASA POWER or the Copernicus DEM. Scores are not verified.
+
+## Limitations
+
+- The Analog Similarity Index and all fidelity/validity percentages are heuristic screening indices with hand-chosen weights. They have not been validated against field campaigns.
+- NASA POWER is a coarse reanalysis grid; GLO-90 is about 90 m resolution.
+- Planetary 2 km traverses are sampled from global DEMs (LOLA 118 m/px, MOLA 463 m/px via USGS Astrogeology). On Mars a 2 km line spans only 4-5 native pixels, so slopes are baseline-scale, not rover-scale. Roughness values along planetary traverses remain literature-based estimates.
+- Physics models are first-order. Radiation, electrostatic dust and vacuum effects need chamber testing.
+- Map tiles and live probing need network access; the physics code and bundled data run locally.
+- No partnership with, or endorsement by, NASA, CONAE, ESA or any agency. No agency logos are used.
+
+## Tech stack
+
+React 18, TypeScript (strict), Vite, Tailwind CSS, Leaflet, Vitest.
+
+## Submission copy
+
+Copy-ready form text is in [`NASA_SUBMISSION_READY.md`](./NASA_SUBMISSION_READY.md).
+
+## AI assistance
+
+AI coding assistants were used to help write code and draft text. The team reviewed the outputs. No AI-generated media is used.
+
+## License
+
+Apache License 2.0. See [`LICENSE`](./LICENSE).

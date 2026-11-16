@@ -54,14 +54,14 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-mono text-sm font-bold tracking-wider text-slate-100 sm:text-base">
-                AETHER-SIM <span className="text-cyan-400">v2.1</span>
+                AETHER-SIM <span className="text-cyan-400">v2.2</span>
               </h1>
               <span className="hidden rounded border border-cyan-500/30 bg-cyan-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-widest text-cyan-300 sm:inline-block">
                 NASA SPACE APPS 2026
               </span>
             </div>
             <p className="text-[11px] text-slate-400">
-              Planetary Analog Similitude, 4D Window &amp; 1:1 Traverse Twinning Engine
+              Analog Finder, Traverse Comparison &amp; Seasonal Window Workbench
             </p>
           </div>
         </div>
@@ -137,11 +137,11 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
 
         {/* Telemetry Status & Action Buttons */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Calibrated Fidelity Pill */}
+          {/* Heuristic similarity index pill */}
           <div className="hidden items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/30 px-2.5 py-1.5 xl:flex">
             <Activity className="h-3.5 w-3.5 text-emerald-400" />
             <span className="font-mono text-[11px] text-emerald-300">
-              SIMILITUDE: <strong>{calibratedFidelity.toFixed(1)}%</strong>
+              HEURISTIC SIMILARITY INDEX: <strong>{calibratedFidelity.toFixed(1)}%</strong>
             </span>
           </div>
 
@@ -179,7 +179,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 font-mono text-xs font-medium text-slate-200 transition hover:border-cyan-500/60 hover:bg-slate-800 hover:text-cyan-300"
           >
             <Download className="h-3.5 w-3.5" />
-            <span>Export TRL Protocol</span>
+            <span>Export Test Protocol</span>
           </button>
 
           {/* 7-Slide Judge Presentation Mode */}
@@ -189,7 +189,7 @@ export const HeaderBar: React.FC<HeaderBarProps> = ({
             className="flex items-center gap-1.5 rounded-lg border border-amber-500/50 bg-amber-500/15 px-3 py-1.5 font-mono text-xs font-semibold text-amber-300 shadow-[0_0_14px_rgba(245,158,11,0.18)] transition hover:bg-amber-500/25"
           >
             <Presentation className="h-3.5 w-3.5" />
-            <span>7-Slide Judge Deck</span>
+            <span>7-Slide Pitch Deck</span>
           </button>
         </div>
       </div>

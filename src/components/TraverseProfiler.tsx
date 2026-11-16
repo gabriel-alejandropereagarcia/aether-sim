@@ -94,11 +94,11 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
               Module 02
             </span>
             <h2 className="text-sm font-bold tracking-wide text-slate-100 sm:text-base">
-              1:1 Geometric Traverse Twinning Profiler (2.0 km Micro-Route)
+              Traverse Profile Comparison (2.0 km Micro-Route)
             </h2>
           </div>
           <p className="mt-0.5 text-xs text-slate-400">
-            Overlaying {target.shortName} (parameterized from {target.citation}) against {site.name} (Copernicus GLO-90 DEM).
+            Overlaying {target.shortName} ({target.isTraverseParameterized ? 'parameterized from ' : ''}{target.citation}) against {site.name} (Copernicus GLO-90 DEM, ~90 m resolution).
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export const TraverseProfiler: React.FC<TraverseProfilerProps> = ({
               viewBox={`0 0 ${width} ${height}`}
               className="h-[250px] w-full min-w-[600px] select-none"
               role="img"
-              aria-label="1:1 2.0 km Traverse Comparison Chart"
+              aria-label="2.0 km Traverse Comparison Chart"
             >
               <defs>
                 <linearGradient id="targetGrad" x1="0" y1="0" x2="0" y2="1">

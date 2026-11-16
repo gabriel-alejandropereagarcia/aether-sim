@@ -71,12 +71,12 @@ export const SeasonalValidityMatrix: React.FC<SeasonalValidityMatrixProps> = ({
               Module 04
             </span>
             <h2 className="text-sm font-bold tracking-wide text-slate-100 sm:text-base">
-              4D Seasonal Validity Matrix &amp; Multi-Site Triad Campaign Optimizer
+              Seasonal Window Matrix &amp; Multi-Site Campaign Optimizer
             </h2>
           </div>
           <p className="mt-0.5 text-xs text-slate-400">
-            NASA POWER 12-month climatology windowing for{' '}
-            <span className="font-mono text-slate-200">{site.name}</span> + TRL 4-&gt;6 Triad Campaign solver.
+            NASA POWER 12-month climatology (heuristic screening index) for{' '}
+            <span className="font-mono text-slate-200">{site.name}</span> + 3-site campaign planner.
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export const SeasonalValidityMatrix: React.FC<SeasonalValidityMatrixProps> = ({
               ))}
               {/* Composite Row */}
               <tr className="bg-slate-900/60">
-                <td className="py-2.5 pr-3 font-bold text-cyan-300">COMPOSITE SITE FIDELITY</td>
+                <td className="py-2.5 pr-3 font-bold text-cyan-300">COMPOSITE HEURISTIC INDEX</td>
                 {seasonal.months.map((m) => {
                   const isSelected = m.monthIndex === inspectedMonth.monthIndex;
                   return (
@@ -216,7 +216,7 @@ export const SeasonalValidityMatrix: React.FC<SeasonalValidityMatrixProps> = ({
                   inspectedMonth.compositeScore,
                 )}`}
               >
-                {inspectedMonth.compositeScore}% FIDELITY
+                {inspectedMonth.compositeScore}% HEURISTIC INDEX
               </span>
             </div>
             <p className="mt-1 text-xs text-slate-300">
@@ -262,7 +262,7 @@ export const SeasonalValidityMatrix: React.FC<SeasonalValidityMatrixProps> = ({
           <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 font-mono text-xs font-bold text-amber-300">
               <Sparkles className="h-4 w-4" />
-              <span>OPTIMAL 3-SITE TRIAD CAMPAIGN (TRL 4 -&gt; TRL 6)</span>
+              <span>SUGGESTED 3-SITE CAMPAIGN (COMPLEMENTARY SITES)</span>
             </div>
             <span className="rounded border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 font-mono text-[11px] font-bold text-emerald-300">
               +{triad.coverageGainPct}% Coverage vs. Single Site

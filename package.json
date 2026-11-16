@@ -1,8 +1,8 @@
 {
   "name": "aether-sim",
   "private": true,
-  "version": "2.0.0",
-  "description": "AETHER-SIM: Planetary Analog Similitude, 4D Window & Traverse Twinning Engine for NASA Space Apps 2026",
+  "version": "2.2.0",
+  "description": "AETHER-SIM: open-data workbench that identifies and characterizes candidate Earth analogs for Moon and Mars surface missions (NASA Space Apps 2026)",
   "type": "module",
   "scripts": {
     "dev": "vite",

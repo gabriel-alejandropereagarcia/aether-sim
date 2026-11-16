@@ -1,0 +1,810 @@
+{
+  "generatedAtUtc": "2026-11-16T01:54:42.132Z",
+  "note": "Real DEM elevations sampled (bilinear) along each target 2.0 km traverse (azimuth 62 deg, 100 m spacing). The DEMs are coarse relative to the 100 m step: MOLA MEGDR is ~463 m/px so a 2 km line spans only ~4-5 native pixels and adjacent samples are interpolated; LOLA LDEM is ~118 m/px so the 2 km line spans ~17 native pixels. Slopes derived from these profiles are baseline-scale slopes, not meter-scale hazard slopes. Near the lunar south pole the traverse polyline uses the same flat-map longitude floor as the on-map overlay, so the sampled ground track there is a map-geometry convention rather than a true geodesic.",
+  "sources": {
+    "MARS": {
+      "name": "MGS MOLA MEGDR global DEM mosaic (USGS Astrogeology)",
+      "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif",
+      "infoUrl": "https://astrogeology.usgs.gov/search/map/mars_mgs_mola_dem_463m",
+      "pixelSizeM": 463.09,
+      "verticalReference": "meters relative to the MOLA areoid (radius 3,396,190 m)",
+      "format": "GeoTIFF int16, accessed with HTTP Range requests"
+    },
+    "MOON": {
+      "name": "LRO LOLA global LDEM 118 m (Mar 2014, USGS Astrogeology)",
+      "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Lunar_LRO_LOLA_Global_LDEM_118m_Mar2014.tif",
+      "infoUrl": "https://astrogeology.usgs.gov/search/map/moon_lro_lola_dem_118m",
+      "pixelSizeM": 118.45,
+      "verticalReference": "meters relative to the 1,737,400 m lunar reference sphere",
+      "format": "GeoTIFF int16 (scale 0.5 m), accessed with HTTP Range requests"
+    }
+  },
+  "targets": {
+    "moon-shackleton": {
+      "body": "MOON",
+      "points": [
+        {
+          "distanceKm": 0,
+          "lat": -89.45,
+          "lon": -137.31,
+          "elevationM": 1955.4
+        },
+        {
+          "distanceKm": 0.1,
+          "lat": -89.448452,
+          "lon": -137.285735,
+          "elevationM": 1953.3
+        },
+        {
+          "distanceKm": 0.2,
+          "lat": -89.446904,
+          "lon": -137.26147,
+          "elevationM": 1955.3
+        },
+        {
+          "distanceKm": 0.3,
+          "lat": -89.445355,
+          "lon": -137.237206,
+          "elevationM": 1955
+        },
+        {
+          "distanceKm": 0.4,
+          "lat": -89.443807,
+          "lon": -137.212941,
+          "elevationM": 1956.1
+        },
+        {
+          "distanceKm": 0.5,
+          "lat": -89.442259,
+          "lon": -137.188676,
+          "elevationM": 1956.9
+        },
+        {
+          "distanceKm": 0.6,
+          "lat": -89.440711,
+          "lon": -137.164411,
+          "elevationM": 1957.9
+        },
+        {
+          "distanceKm": 0.7,
+          "lat": -89.439162,
+          "lon": -137.140146,
+          "elevationM": 1958.9
+        },
+        {
+          "distanceKm": 0.8,
+          "lat": -89.437614,
+          "lon": -137.115882,
+          "elevationM": 1956.2
+        },
+        {
+          "distanceKm": 0.9,
+          "lat": -89.436066,
+          "lon": -137.091617,
+          "elevationM": 1954.3
+        },
+        {
+          "distanceKm": 1,
+          "lat": -89.434518,
+          "lon": -137.067352,
+          "elevationM": 1953.8
+        },
+        {
+          "distanceKm": 1.1,
+          "lat": -89.43297,
+          "lon": -137.043087,
+          "elevationM": 1951.3
+        },
+        {
+          "distanceKm": 1.2,
+          "lat": -89.431421,
+          "lon": -137.018823,
+          "elevationM": 1948.8
+        },
+        {
+          "distanceKm": 1.3,
+          "lat": -89.429873,
+          "lon": -136.994558,
+          "elevationM": 1946
+        },
+        {
+          "distanceKm": 1.4,
+          "lat": -89.428325,
+          "lon": -136.970293,
+          "elevationM": 1941.7
+        },
+        {
+          "distanceKm": 1.5,
+          "lat": -89.426777,
+          "lon": -136.946028,
+          "elevationM": 1938.7
+        },
+        {
+          "distanceKm": 1.6,
+          "lat": -89.425229,
+          "lon": -136.921763,
+          "elevationM": 1935.5
+        },
+        {
+          "distanceKm": 1.7,
+          "lat": -89.42368,
+          "lon": -136.897499,
+          "elevationM": 1930.5
+        },
+        {
+          "distanceKm": 1.8,
+          "lat": -89.422132,
+          "lon": -136.873234,
+          "elevationM": 1925.6
+        },
+        {
+          "distanceKm": 1.9,
+          "lat": -89.420584,
+          "lon": -136.848969,
+          "elevationM": 1921.9
+        },
+        {
+          "distanceKm": 2,
+          "lat": -89.419036,
+          "lon": -136.824704,
+          "elevationM": 1915.4
+        }
+      ]
+    },
+    "moon-marius": {
+      "body": "MOON",
+      "points": [
+        {
+          "distanceKm": 0,
+          "lat": 14.09,
+          "lon": -56.77,
+          "elevationM": -1568.7
+        },
+        {
+          "distanceKm": 0.1,
+          "lat": 14.091548,
+          "lon": -56.766998,
+          "elevationM": -1566.7
+        },
+        {
+          "distanceKm": 0.2,
+          "lat": 14.093096,
+          "lon": -56.763996,
+          "elevationM": -1563.1
+        },
+        {
+          "distanceKm": 0.3,
+          "lat": 14.094645,
+          "lon": -56.760994,
+          "elevationM": -1552.2
+        },
+        {
+          "distanceKm": 0.4,
+          "lat": 14.096193,
+          "lon": -56.757992,
+          "elevationM": -1540.5
+        },
+        {
+          "distanceKm": 0.5,
+          "lat": 14.097741,
+          "lon": -56.75499,
+          "elevationM": -1534.5
+        },
+        {
+          "distanceKm": 0.6,
+          "lat": 14.099289,
+          "lon": -56.751987,
+          "elevationM": -1530.2
+        },
+        {
+          "distanceKm": 0.7,
+          "lat": 14.100838,
+          "lon": -56.748985,
+          "elevationM": -1528.8
+        },
+        {
+          "distanceKm": 0.8,
+          "lat": 14.102386,
+          "lon": -56.745983,
+          "elevationM": -1527.3
+        },
+        {
+          "distanceKm": 0.9,
+          "lat": 14.103934,
+          "lon": -56.742981,
+          "elevationM": -1525.7
+        },
+        {
+          "distanceKm": 1,
+          "lat": 14.105482,
+          "lon": -56.739979,
+          "elevationM": -1524.1
+        },
+        {
+          "distanceKm": 1.1,
+          "lat": 14.10703,
+          "lon": -56.736977,
+          "elevationM": -1522.8
+        },
+        {
+          "distanceKm": 1.2,
+          "lat": 14.108579,
+          "lon": -56.733975,
+          "elevationM": -1521.7
+        },
+        {
+          "distanceKm": 1.3,
+          "lat": 14.110127,
+          "lon": -56.730973,
+          "elevationM": -1520.6
+        },
+        {
+          "distanceKm": 1.4,
+          "lat": 14.111675,
+          "lon": -56.727971,
+          "elevationM": -1519.3
+        },
+        {
+          "distanceKm": 1.5,
+          "lat": 14.113223,
+          "lon": -56.724969,
+          "elevationM": -1518.2
+        },
+        {
+          "distanceKm": 1.6,
+          "lat": 14.114771,
+          "lon": -56.721966,
+          "elevationM": -1517
+        },
+        {
+          "distanceKm": 1.7,
+          "lat": 14.11632,
+          "lon": -56.718964,
+          "elevationM": -1516
+        },
+        {
+          "distanceKm": 1.8,
+          "lat": 14.117868,
+          "lon": -56.715962,
+          "elevationM": -1515.1
+        },
+        {
+          "distanceKm": 1.9,
+          "lat": 14.119416,
+          "lon": -56.71296,
+          "elevationM": -1514.1
+        },
+        {
+          "distanceKm": 2,
+          "lat": 14.120964,
+          "lon": -56.709958,
+          "elevationM": -1513.3
+        }
+      ]
+    },
+    "moon-aristarchus": {
+      "body": "MOON",
+      "points": [
+        {
+          "distanceKm": 0,
+          "lat": 24.01,
+          "lon": -51.4,
+          "elevationM": -879.7
+        },
+        {
+          "distanceKm": 0.1,
+          "lat": 24.011548,
+          "lon": -51.396812,
+          "elevationM": -881.1
+        },
+        {
+          "distanceKm": 0.2,
+          "lat": 24.013096,
+          "lon": -51.393625,
+          "elevationM": -881.8
+        },
+        {
+          "distanceKm": 0.3,
+          "lat": 24.014645,
+          "lon": -51.390437,
+          "elevationM": -881.5
+        },
+        {
+          "distanceKm": 0.4,
+          "lat": 24.016193,
+          "lon": -51.38725,
+          "elevationM": -877.7
+        },
+        {
+          "distanceKm": 0.5,
+          "lat": 24.017741,
+          "lon": -51.384062,
+          "elevationM": -872.6
+        },
+        {
+          "distanceKm": 0.6,
+          "lat": 24.019289,
+          "lon": -51.380875,
+          "elevationM": -868.4
+        },
+        {
+          "distanceKm": 0.7,
+          "lat": 24.020838,
+          "lon": -51.377687,
+          "elevationM": -864.4
+        },
+        {
+          "distanceKm": 0.8,
+          "lat": 24.022386,
+          "lon": -51.374499,
+          "elevationM": -861.2
+        },
+        {
+          "distanceKm": 0.9,
+          "lat": 24.023934,
+          "lon": -51.371312,
+          "elevationM": -860.5
+        },
+        {
+          "distanceKm": 1,
+          "lat": 24.025482,
+          "lon": -51.368124,
+          "elevationM": -861.9
+        },
+        {
+          "distanceKm": 1.1,
+          "lat": 24.02703,
+          "lon": -51.364937,
+          "elevationM": -859.2
+        },
+        {
+          "distanceKm": 1.2,
+          "lat": 24.028579,
+          "lon": -51.361749,
+          "elevationM": -854.4
+        },
+        {
+          "distanceKm": 1.3,
+          "lat": 24.030127,
+          "lon": -51.358561,
+          "elevationM": -845
+        },
+        {
+          "distanceKm": 1.4,
+          "lat": 24.031675,
+          "lon": -51.355374,
+          "elevationM": -834.1
+        },
+        {
+          "distanceKm": 1.5,
+          "lat": 24.033223,
+          "lon": -51.352186,
+          "elevationM": -823.2
+        },
+        {
+          "distanceKm": 1.6,
+          "lat": 24.034771,
+          "lon": -51.348999,
+          "elevationM": -812.8
+        },
+        {
+          "distanceKm": 1.7,
+          "lat": 24.03632,
+          "lon": -51.345811,
+          "elevationM": -803
+        },
+        {
+          "distanceKm": 1.8,
+          "lat": 24.037868,
+          "lon": -51.342624,
+          "elevationM": -793.7
+        },
+        {
+          "distanceKm": 1.9,
+          "lat": 24.039416,
+          "lon": -51.339436,
+          "elevationM": -785
+        },
+        {
+          "distanceKm": 2,
+          "lat": 24.040964,
+          "lon": -51.336248,
+          "elevationM": -776.5
+        }
+      ]
+    },
+    "mars-jezero": {
+      "body": "MARS",
+      "points": [
+        {
+          "distanceKm": 0,
+          "lat": 18.44,
+          "lon": 77.45,
+          "elevationM": -2566.2
+        },
+        {
+          "distanceKm": 0.1,
+          "lat": 18.440794,
+          "lon": 77.451573,
+          "elevationM": -2567.1
+        },
+        {
+          "distanceKm": 0.2,
+          "lat": 18.441587,
+          "lon": 77.453147,
+          "elevationM": -2567.9
+        },
+        {
+          "distanceKm": 0.3,
+          "lat": 18.442381,
+          "lon": 77.45472,
+          "elevationM": -2568.6
+        },
+        {
+          "distanceKm": 0.4,
+          "lat": 18.443174,
+          "lon": 77.456293,
+          "elevationM": -2569.2
+        },
+        {
+          "distanceKm": 0.5,
+          "lat": 18.443968,
+          "lon": 77.457867,
+          "elevationM": -2569.8
+        },
+        {
+          "distanceKm": 0.6,
+          "lat": 18.444762,
+          "lon": 77.45944,
+          "elevationM": -2570.2
+        },
+        {
+          "distanceKm": 0.7,
+          "lat": 18.445555,
+          "lon": 77.461013,
+          "elevationM": -2570.6
+        },
+        {
+          "distanceKm": 0.8,
+          "lat": 18.446349,
+          "lon": 77.462586,
+          "elevationM": -2570.9
+        },
+        {
+          "distanceKm": 0.9,
+          "lat": 18.447142,
+          "lon": 77.46416,
+          "elevationM": -2571.1
+        },
+        {
+          "distanceKm": 1,
+          "lat": 18.447936,
+          "lon": 77.465733,
+          "elevationM": -2571.3
+        },
+        {
+          "distanceKm": 1.1,
+          "lat": 18.448729,
+          "lon": 77.467306,
+          "elevationM": -2571.5
+        },
+        {
+          "distanceKm": 1.2,
+          "lat": 18.449523,
+          "lon": 77.46888,
+          "elevationM": -2571.9
+        },
+        {
+          "distanceKm": 1.3,
+          "lat": 18.450317,
+          "lon": 77.470453,
+          "elevationM": -2572.6
+        },
+        {
+          "distanceKm": 1.4,
+          "lat": 18.45111,
+          "lon": 77.472026,
+          "elevationM": -2573.2
+        },
+        {
+          "distanceKm": 1.5,
+          "lat": 18.451904,
+          "lon": 77.4736,
+          "elevationM": -2573.7
+        },
+        {
+          "distanceKm": 1.6,
+          "lat": 18.452697,
+          "lon": 77.475173,
+          "elevationM": -2574
+        },
+        {
+          "distanceKm": 1.7,
+          "lat": 18.453491,
+          "lon": 77.476746,
+          "elevationM": -2574
+        },
+        {
+          "distanceKm": 1.8,
+          "lat": 18.454285,
+          "lon": 77.47832,
+          "elevationM": -2573.8
+        },
+        {
+          "distanceKm": 1.9,
+          "lat": 18.455078,
+          "lon": 77.479893,
+          "elevationM": -2573.7
+        },
+        {
+          "distanceKm": 2,
+          "lat": 18.455872,
+          "lon": 77.481466,
+          "elevationM": -2573.4
+        }
+      ]
+    },
+    "mars-arcadia": {
+      "body": "MARS",
+      "points": [
+        {
+          "distanceKm": 0,
+          "lat": 39.2,
+          "lon": -172,
+          "elevationM": -3811.9
+        },
+        {
+          "distanceKm": 0.1,
+          "lat": 39.200794,
+          "lon": -171.998074,
+          "elevationM": -3812.6
+        },
+        {
+          "distanceKm": 0.2,
+          "lat": 39.201587,
+          "lon": -171.996148,
+          "elevationM": -3813.4
+        },
+        {
+          "distanceKm": 0.3,
+          "lat": 39.202381,
+          "lon": -171.994222,
+          "elevationM": -3814.3
+        },
+        {
+          "distanceKm": 0.4,
+          "lat": 39.203174,
+          "lon": -171.992296,
+          "elevationM": -3815.2
+        },
+        {
+          "distanceKm": 0.5,
+          "lat": 39.203968,
+          "lon": -171.99037,
+          "elevationM": -3816.6
+        },
+        {
+          "distanceKm": 0.6,
+          "lat": 39.204762,
+          "lon": -171.988444,
+          "elevationM": -3818
+        },
+        {
+          "distanceKm": 0.7,
+          "lat": 39.205555,
+          "lon": -171.986518,
+          "elevationM": -3819.3
+        },
+        {
+          "distanceKm": 0.8,
+          "lat": 39.206349,
+          "lon": -171.984592,
+          "elevationM": -3820.6
+        },
+        {
+          "distanceKm": 0.9,
+          "lat": 39.207142,
+          "lon": -171.982666,
+          "elevationM": -3822.1
+        },
+        {
+          "distanceKm": 1,
+          "lat": 39.207936,
+          "lon": -171.98074,
+          "elevationM": -3823.5
+        },
+        {
+          "distanceKm": 1.1,
+          "lat": 39.208729,
+          "lon": -171.978814,
+          "elevationM": -3825.1
+        },
+        {
+          "distanceKm": 1.2,
+          "lat": 39.209523,
+          "lon": -171.976888,
+          "elevationM": -3826.5
+        },
+        {
+          "distanceKm": 1.3,
+          "lat": 39.210317,
+          "lon": -171.974962,
+          "elevationM": -3827.7
+        },
+        {
+          "distanceKm": 1.4,
+          "lat": 39.21111,
+          "lon": -171.973036,
+          "elevationM": -3828.8
+        },
+        {
+          "distanceKm": 1.5,
+          "lat": 39.211904,
+          "lon": -171.97111,
+          "elevationM": -3829.8
+        },
+        {
+          "distanceKm": 1.6,
+          "lat": 39.212697,
+          "lon": -171.969184,
+          "elevationM": -3830.8
+        },
+        {
+          "distanceKm": 1.7,
+          "lat": 39.213491,
+          "lon": -171.967258,
+          "elevationM": -3831.6
+        },
+        {
+          "distanceKm": 1.8,
+          "lat": 39.214285,
+          "lon": -171.965332,
+          "elevationM": -3832.3
+        },
+        {
+          "distanceKm": 1.9,
+          "lat": 39.215078,
+          "lon": -171.963406,
+          "elevationM": -3832.9
+        },
+        {
+          "distanceKm": 2,
+          "lat": 39.215872,
+          "lon": -171.96148,
+          "elevationM": -3833.5
+        }
+      ]
+    },
+    "mars-gale": {
+      "body": "MARS",
+      "points": [
+        {
+          "distanceKm": 0,
+          "lat": -4.8,
+          "lon": 137.4,
+          "elevationM": -3632.6
+        },
+        {
+          "distanceKm": 0.1,
+          "lat": -4.799206,
+          "lon": 137.401498,
+          "elevationM": -3633.3
+        },
+        {
+          "distanceKm": 0.2,
+          "lat": -4.798413,
+          "lon": 137.402996,
+          "elevationM": -3634.1
+        },
+        {
+          "distanceKm": 0.3,
+          "lat": -4.797619,
+          "lon": 137.404493,
+          "elevationM": -3634.8
+        },
+        {
+          "distanceKm": 0.4,
+          "lat": -4.796826,
+          "lon": 137.405991,
+          "elevationM": -3634.3
+        },
+        {
+          "distanceKm": 0.5,
+          "lat": -4.796032,
+          "lon": 137.407489,
+          "elevationM": -3632.6
+        },
+        {
+          "distanceKm": 0.6,
+          "lat": -4.795238,
+          "lon": 137.408987,
+          "elevationM": -3631.1
+        },
+        {
+          "distanceKm": 0.7,
+          "lat": -4.794445,
+          "lon": 137.410484,
+          "elevationM": -3629.8
+        },
+        {
+          "distanceKm": 0.8,
+          "lat": -4.793651,
+          "lon": 137.411982,
+          "elevationM": -3628.8
+        },
+        {
+          "distanceKm": 0.9,
+          "lat": -4.792858,
+          "lon": 137.41348,
+          "elevationM": -3627.8
+        },
+        {
+          "distanceKm": 1,
+          "lat": -4.792064,
+          "lon": 137.414978,
+          "elevationM": -3626.5
+        },
+        {
+          "distanceKm": 1.1,
+          "lat": -4.791271,
+          "lon": 137.416476,
+          "elevationM": -3625.3
+        },
+        {
+          "distanceKm": 1.2,
+          "lat": -4.790477,
+          "lon": 137.417973,
+          "elevationM": -3624.2
+        },
+        {
+          "distanceKm": 1.3,
+          "lat": -4.789683,
+          "lon": 137.419471,
+          "elevationM": -3623.2
+        },
+        {
+          "distanceKm": 1.4,
+          "lat": -4.78889,
+          "lon": 137.420969,
+          "elevationM": -3622.4
+        },
+        {
+          "distanceKm": 1.5,
+          "lat": -4.788096,
+          "lon": 137.422467,
+          "elevationM": -3620.5
+        },
+        {
+          "distanceKm": 1.6,
+          "lat": -4.787303,
+          "lon": 137.423964,
+          "elevationM": -3618.9
+        },
+        {
+          "distanceKm": 1.7,
+          "lat": -4.786509,
+          "lon": 137.425462,
+          "elevationM": -3617.5
+        },
+        {
+          "distanceKm": 1.8,
+          "lat": -4.785715,
+          "lon": 137.42696,
+          "elevationM": -3616.2
+        },
+        {
+          "distanceKm": 1.9,
+          "lat": -4.784922,
+          "lon": 137.428458,
+          "elevationM": -3615.5
+        },
+        {
+          "distanceKm": 2,
+          "lat": -4.784128,
+          "lon": 137.429956,
+          "elevationM": -3614.7
+        }
+      ]
+    }
+  }
+}

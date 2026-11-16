@@ -100,7 +100,7 @@ export const PhysicsCalibrationLab: React.FC<PhysicsCalibrationLabProps> = ({
               Module 03
             </span>
             <h2 className="text-sm font-bold tracking-wide text-slate-100 sm:text-base">
-              The &ldquo;Earth-Lie&rdquo; Physics Similitude &amp; Hardware Calibration Lab
+              Earth-vs-Target Physics Calibration Lab (first-order models)
             </h2>
           </div>
           <p className="mt-0.5 text-xs text-slate-400">
@@ -111,14 +111,14 @@ export const PhysicsCalibrationLab: React.FC<PhysicsCalibrationLabProps> = ({
 
         <div className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-900/80 px-3 py-1.5 font-mono text-xs">
           <div>
-            <span className="text-slate-400">Raw 1g Field Score: </span>
+            <span className="text-slate-400">Raw 1g heuristic index: </span>
             <span className="font-bold text-rose-400">
               {calibration.uncompensatedFidelityScore.toFixed(1)}%
             </span>
           </div>
           <span className="text-slate-600">-&gt;</span>
           <div>
-            <span className="text-slate-400">Post-Rig Residual Score: </span>
+            <span className="text-slate-400">Post-rig heuristic index: </span>
             <span className="font-bold text-emerald-400">
               {calibration.calibratedFidelityScore.toFixed(1)}%
             </span>
@@ -318,7 +318,7 @@ export const PhysicsCalibrationLab: React.FC<PhysicsCalibrationLabProps> = ({
             <div className="mt-3 space-y-2 rounded border border-slate-800 bg-slate-950 p-2.5 font-mono text-[11px]">
               <div>
                 <div className="flex justify-between text-slate-300">
-                  <span>True {target.body} Target Sinkage</span>
+                  <span>Modelled {target.body} Target Sinkage</span>
                   <span className="text-emerald-300">{calibration.targetSinkageMm} mm</span>
                 </div>
                 <div className="mt-1 h-2 w-full overflow-hidden rounded bg-slate-800">

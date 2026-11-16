@@ -12,6 +12,35 @@ import {
   Search,
 } from 'lucide-react';
 import { EarthAnalogSite, PlanetaryTarget } from '../data/planetaryData';
+import { ScanBbox, wrapLongitude } from '../engine/analogFinder';
+
+/** Minimal candidate shape drawn on the Earth map by the Analog Finder. */
+export interface MapScanCandidate {
+  id: string;
+  lat: number;
+  lon: number;
+  rank: number;
+  index: number;
+  isNovel: boolean;
+}
+
+/** Colour ramp for the Analog Similarity Index (0-100). */
+export function analogIndexColor(index: number): string {
+  if (index >= 80) return '#10b981';
+  if (index >= 70) return '#84cc16';
+  if (index >= 60) return '#f59e0b';
+  if (index >= 50) return '#f97316';
+  return '#ef4444';
+}
+
+/** Converts Leaflet bounds to a [-180, 180]-wrapped, latitude-clamped scan bbox. */
+function boundsToScanBbox(bounds: L.LatLngBounds): ScanBbox {
+  const south = Math.max(-85, bounds.getSouth());
+  const north = Math.min(85, bounds.getNorth());
+  const spanLon = bounds.getEast() - bounds.getWest();
+  if (spanLon >= 360) return { south, north, west: -180, east: 180 };
+  return { south, north, west: wrapLongitude(bounds.getWest()), east: wrapLongitude(bounds.getEast()) };
+}
 
 type EarthLayerMode = 'DARK_TACTICAL' | 'GIBS_BLUE_MARBLE' | 'GIBS_LST_DAY' | 'GIBS_ASTER_GDEM';
 
@@ -24,6 +53,12 @@ interface DualPlanetaryMapProps {
   onProbeCoordinate: (lat: number, lon: number) => void;
   isProbing: boolean;
   powerEndpointUrl: string;
+  /** Analog Finder scan region (drawn as a dashed rectangle). */
+  scanBbox?: ScanBbox | null;
+  /** Analog Finder candidate cells, coloured by Analog Similarity Index; click = probe. */
+  scanCandidates?: MapScanCandidate[];
+  /** Reports the current Earth map view bounds (wrapped to [-180, 180]) on init and every move. */
+  onEarthBoundsChange?: (bbox: ScanBbox) => void;
 }
 
 const EARTH_LAYERS: Record<
@@ -146,6 +181,9 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
   onProbeCoordinate,
   isProbing,
   powerEndpointUrl,
+  scanBbox,
+  scanCandidates,
+  onEarthBoundsChange,
 }) => {
   const earthMapDivRef = useRef<HTMLDivElement | null>(null);
   const planetMapDivRef = useRef<HTMLDivElement | null>(null);
@@ -156,6 +194,10 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
   const planetBaseGroupRef = useRef<L.LayerGroup | null>(null);
   const planetOverlayGroupRef = useRef<L.LayerGroup | null>(null);
   const lastCenteredSiteIdRef = useRef<string | null>(null);
+  const earthScanGroupRef = useRef<L.LayerGroup | null>(null);
+  const lastFittedBboxKeyRef = useRef<string | null>(null);
+  const onEarthBoundsChangeRef = useRef(onEarthBoundsChange);
+  onEarthBoundsChangeRef.current = onEarthBoundsChange;
 
   const [earthLayerMode, setEarthLayerMode] = useState<EarthLayerMode>('DARK_TACTICAL');
   const [liveProbeActive, setLiveProbeActive] = useState<boolean>(true);
@@ -179,17 +221,26 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
       zoomControl: true,
     });
 
+    const scanGroup = L.layerGroup().addTo(map);
     const overlayGroup = L.layerGroup().addTo(map);
     earthMapRef.current = map;
     earthOverlayGroupRef.current = overlayGroup;
+    earthScanGroupRef.current = scanGroup;
     lastCenteredSiteIdRef.current = selectedSite.id;
 
-    const resizeTimer = window.setTimeout(() => map.invalidateSize(), 150);
+    const reportBounds = () => onEarthBoundsChangeRef.current?.(boundsToScanBbox(map.getBounds()));
+    map.on('moveend', reportBounds);
+    const resizeTimer = window.setTimeout(() => {
+      map.invalidateSize();
+      reportBounds();
+    }, 150);
 
     return () => {
       window.clearTimeout(resizeTimer);
+      map.off('moveend', reportBounds);
       map.remove();
       earthMapRef.current = null;
+      earthScanGroupRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -296,7 +347,7 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
         weight: 3.5,
         opacity: 0.95,
       })
-        .bindTooltip('2.0 km Verified Copernicus GLO-90 DEM Traverse')
+        .bindTooltip('2.0 km Copernicus GLO-90 DEM Traverse')
         .addTo(group);
     }
 
@@ -315,6 +366,53 @@ export const DualPlanetaryMap: React.FC<DualPlanetaryMapProps> = ({
       });
     }
   }, [sites, probedSites, selectedSite, onSelectSite]);
+
+  // Analog Finder overlay: scan bbox rectangle + candidate cells coloured by index
+  useEffect(() => {
+    const map = earthMapRef.current;
+    const group = earthScanGroupRef.current;
+    if (!map || !group) return;
+    group.clearLayers();
+    if (!scanBbox) return;
+
+    // Unwrap an antimeridian-crossing box so the rectangle is drawn the short way round
+    const east = scanBbox.east >= scanBbox.west ? scanBbox.east : scanBbox.east + 360;
+    const rectBounds = L.latLngBounds([scanBbox.south, scanBbox.west], [scanBbox.north, east]);
+    L.rectangle(rectBounds, {
+      color: '#22d3ee',
+      weight: 1.2,
+      dashArray: '6 4',
+      fill: false,
+      interactive: false,
+    }).addTo(group);
+
+    (scanCandidates ?? []).forEach((c) => {
+      const lon = scanBbox.east < scanBbox.west && c.lon < scanBbox.west ? c.lon + 360 : c.lon;
+      const color = analogIndexColor(c.index);
+      const marker = L.circleMarker([c.lat, lon], {
+        radius: c.rank <= 5 ? 7 : 5,
+        color: c.isNovel ? '#ecfeff' : color,
+        weight: c.rank <= 5 ? 2 : 1,
+        fillColor: color,
+        fillOpacity: 0.75,
+      });
+      marker.bindTooltip(
+        `<div style="font-family:monospace;font-size:11px;"><strong>Candidate #${c.rank}</strong>${c.isNovel ? ' (NEW)' : ''}<br/>Analog Similarity Index ${c.index.toFixed(1)}<br/>${c.lat.toFixed(3)}°, ${c.lon.toFixed(3)}° | click to probe</div>`,
+        { direction: 'top', offset: [0, -6] },
+      );
+      marker.on('click', (ev) => {
+        L.DomEvent.stopPropagation(ev);
+        onProbeCoordinate(c.lat, c.lon);
+      });
+      marker.addTo(group);
+    });
+
+    const bboxKey = `${scanBbox.south},${scanBbox.north},${scanBbox.west},${scanBbox.east}`;
+    if (lastFittedBboxKeyRef.current !== bboxKey) {
+      lastFittedBboxKeyRef.current = bboxKey;
+      map.fitBounds(rectBounds, { padding: [12, 12], animate: true });
+    }
+  }, [scanBbox, scanCandidates, onProbeCoordinate]);
 
   // Initialize Moon/Mars Target Map (EPSG:4326 for NASA Trek WMTS alignment)
   useEffect(() => {

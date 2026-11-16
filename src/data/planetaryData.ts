@@ -1,4 +1,5 @@
 import verifiedEarthTelemetry from './verifiedEarthTelemetry.json';
+import verifiedPlanetaryProfiles from './verifiedPlanetaryProfiles.json';
 
 export type PlanetaryBody = 'MOON' | 'MARS';
 
@@ -248,7 +249,7 @@ export const MOON_TREK_WMTS =
 export const MARS_TREK_WMTS =
   'https://trek.nasa.gov/tiles/Mars/EQ/Mars_Viking_MDIM21_ClrMosaic_global_232m/1.0.0/default/default028mm/{z}/{y}/{x}.jpg';
 
-export const PLANETARY_TARGETS: PlanetaryTarget[] = [
+const PARAMETERIZED_PLANETARY_TARGETS: PlanetaryTarget[] = [
   {
     id: 'moon-shackleton',
     name: 'Shackleton-de Gerlache Connecting Ridge (Artemis III South Pole)',
@@ -259,8 +260,8 @@ export const PLANETARY_TARGETS: PlanetaryTarget[] = [
     citation: 'Zuber et al. (2012) Nature 486:378; Mazarico et al. (2011) Icarus 211:1066 (LOLA)',
     doi: '10.1038/nature11216',
     isTraverseParameterized: true,
-    lat: -89.54,
-    lon: 129.78,
+    lat: -89.45,
+    lon: -137.31,
     elevationM: 2120,
     gravityMs2: 1.62,
     pressurePa: 0,
@@ -290,7 +291,7 @@ export const PLANETARY_TARGETS: PlanetaryTarget[] = [
       [0, 5, 11, 18, 25, 32, 38, 43, 47, 50, 52, 53, 51, 45, 34, 18, -2, -24, -44, -60, -72],
       [0.32, 0.34, 0.36, 0.38, 0.39, 0.37, 0.35, 0.32, 0.30, 0.28, 0.29, 0.31, 0.35, 0.42, 0.54, 0.65, 0.72, 0.75, 0.71, 0.66, 0.61],
       {
-        0: 'Connecting Ridge Pad (LOLA +2,120 m)',
+        0: 'Connecting Ridge Pad',
         6: 'Gentle Sunlit Crest (<5 deg)',
         11: 'Peak Illumination Relay',
         16: 'PSR Margin Descent (>12 deg)',
@@ -341,8 +342,8 @@ export const PLANETARY_TARGETS: PlanetaryTarget[] = [
       {
         0: 'Mare Basalt Staging',
         7: 'Rille Margin Approach',
-        11: 'Skylight Rim Anchor (0 m drop)',
-        13: 'Pit Floor (-40 m LRO NAC depth)',
+        11: 'Skylight Rim Anchor',
+        13: 'Pit Floor',
         20: 'Opposite Mare Rim',
       },
     ),
@@ -437,11 +438,11 @@ export const PLANETARY_TARGETS: PlanetaryTarget[] = [
       [0, 2, 4, 7, 11, 16, 22, 28, 33, 38, 42, 46, 49, 51, 53, 55, 57, 58, 59, 60, 60],
       [0.42, 0.45, 0.50, 0.55, 0.61, 0.67, 0.72, 0.70, 0.65, 0.60, 0.55, 0.52, 0.49, 0.54, 0.58, 0.62, 0.60, 0.55, 0.50, 0.46, 0.43],
       {
-        0: 'Seitah Dune Contact (-2,555 m)',
+        0: 'Seitah Dune Contact',
         5: 'Delta Ramp Base',
-        10: 'Hawksbill Gap Mudstones (-2,513 m)',
+        10: 'Hawksbill Gap Mudstones',
         15: 'Rocky Top Bench',
-        20: 'Upper Delta Margin (-2,495 m)',
+        20: 'Upper Delta Margin',
       },
     ),
   },
@@ -504,8 +505,8 @@ export const PLANETARY_TARGETS: PlanetaryTarget[] = [
     citation: 'Milliken et al. (2010) GRL 37:L04201; Vasavada (2022) Space Sci. Rev. 218:14',
     doi: '10.1007/s11214-022-00882-7',
     isTraverseParameterized: true,
-    lat: -5.08,
-    lon: 137.85,
+    lat: -4.8,
+    lon: 137.4,
     elevationM: -4040,
     gravityMs2: 3.721,
     pressurePa: 730,
@@ -535,15 +536,50 @@ export const PLANETARY_TARGETS: PlanetaryTarget[] = [
       [0, 4, 9, 16, 24, 33, 43, 52, 60, 66, 73, 82, 92, 101, 108, 114, 120, 126, 131, 133, 135],
       [0.48, 0.53, 0.59, 0.66, 0.73, 0.78, 0.81, 0.77, 0.72, 0.66, 0.72, 0.79, 0.84, 0.81, 0.76, 0.71, 0.75, 0.80, 0.77, 0.73, 0.69],
       {
-        0: 'Gediz Vallis Margin (-4,040 m)',
+        0: 'Gediz Vallis Margin',
         6: 'Sulfate Unit Transition',
         12: 'Boxwork Ridge Apex',
         16: 'Fracture-Fill Vein Wall',
-        20: 'Upper Evaporite Bench (-3,905 m)',
+        20: 'Upper Evaporite Bench',
       },
     ),
   },
 ];
+
+interface RealPlanetaryProfile {
+  body: string;
+  points: { distanceKm: number; lat: number; lon: number; elevationM: number }[];
+}
+
+/**
+ * Replaces the literature-parameterized elevation profile with real DEM elevations
+ * (MOLA / LOLA, baked by scripts/fetchPlanetaryProfiles.mjs) when available.
+ * Roughness profile and milestone labels are kept from the parameterized traverse.
+ */
+function withRealProfile(target: PlanetaryTarget): PlanetaryTarget {
+  const real = (verifiedPlanetaryProfiles.targets as Record<string, RealPlanetaryProfile | undefined>)[target.id];
+  if (!real || real.points.length !== target.traverse.length) return target;
+  const elevations = real.points.map((p) => p.elevationM);
+  const reliefM = Math.max(...elevations) - Math.min(...elevations);
+  if (!Number.isFinite(reliefM) || reliefM < 2) return target; // degenerate at DEM resolution
+  const source = (verifiedPlanetaryProfiles.sources as Record<string, { name: string; pixelSizeM: number } | undefined>)[real.body];
+  const base = elevations[0];
+  const citationSuffix = source ? `; Elevations: ${source.name}, ~${Math.round(source.pixelSizeM)} m/px` : '';
+  return {
+    ...target,
+    citation: target.citation + citationSuffix,
+    isTraverseParameterized: false,
+    elevationM: Math.round(base),
+    traverse: buildPlanetaryTraverse(
+      base,
+      elevations.map((e) => e - base),
+      target.traverse.map((p) => p.roughnessIndex),
+      Object.fromEntries(target.traverse.flatMap((p, idx) => (p.label ? [[idx, p.label]] : []))),
+    ),
+  };
+}
+
+export const PLANETARY_TARGETS: PlanetaryTarget[] = PARAMETERIZED_PLANETARY_TARGETS.map(withRealProfile);
 
 interface VerifiedTelemetryFile {
   generatedAtUtc: string;
@@ -694,7 +730,7 @@ const SITE_SEEDS: SiteSeed[] = [
         instrument: 'Copernicus DEM GLO-90 + Sentinel-2 SWIR',
         metricLabel: 'DEM Basin Profile',
         metricValue: '3,549 m -> 3,469 m',
-        description: 'Verified Copernicus GLO-90 transect descending from Cono de Arita flank onto Arizaro halite polygons.',
+        description: 'Copernicus GLO-90 transect descending from Cono de Arita flank onto Arizaro halite polygons.',
         isSynthetic: false,
       },
     ],
@@ -790,7 +826,7 @@ const SITE_SEEDS: SiteSeed[] = [
         instrument: 'Copernicus DEM + SELENE Gravimetry Analog',
         metricLabel: 'DEM Basalt Transect',
         metricValue: '1,740 m -> 1,766 m',
-        description: 'Verified Copernicus GLO-90 basaltic lava field profile; benchmarked with Haruyama et al. (2009) lunar skylight studies.',
+        description: 'Copernicus GLO-90 basaltic lava field profile; benchmarked with Haruyama et al. (2009) lunar skylight studies.',
         isSynthetic: false,
       },
     ],
@@ -1010,7 +1046,7 @@ const SITE_SEEDS: SiteSeed[] = [
         instrument: 'SAND-E & RAVEN Campaigns (Hughes et al. 2019)',
         metricLabel: 'Rover / Drone Analog',
         metricValue: 'Holuhraun Basalt Tephra',
-        description: 'Official NASA PSTAR Mars/Moon rover mobility and aeolian basaltic sediment provenance testbed.',
+        description: 'Basaltic highland used as a rover-mobility and aeolian-sediment analog in published Mars/Moon field studies.',
         isSynthetic: false,
       },
     ],

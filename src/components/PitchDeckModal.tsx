@@ -43,195 +43,188 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({
     () => [
       {
         number: 1,
-        tag: 'SLIDE 01 / 07 // TITLE & VISION',
-        title: 'AETHER-SIM: Planetary Analog Similitude, 4D Window & Traverse Twinning Engine',
+        tag: 'SLIDE 01 / 07 // THE PROBLEM',
+        title: 'Earth analogs for the Moon and Mars are not well characterized',
         subtitle:
-          'Transforming static Earth-pin maps into a quantitative aerospace calibration workbench for NASA Artemis Moon & Human Mars readiness.',
+          'Challenge: "Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars." Teams test equipment on Earth before flight, but the list of analog sites is short and their characterization is uneven.',
         bullets: [
           {
-            heading: 'Challenge Solved',
+            heading: 'Known analogs are few and thinly described',
             detail:
-              'Identify Earth Locations that Analog the Permanent Moon Base Locations and Mars — solved via physical similitude transfer rather than visual resemblance.',
+              'Atacama, Haughton Crater and Death Valley are the usual answers. Most other candidate terrain has never been screened against Moon or Mars conditions in a consistent way.',
           },
           {
-            heading: 'Operational Paradigm',
+            heading: 'Selection depends on many factors at once',
             detail:
-              'Bridges verified satellite telemetry (NASA POWER + ISA lapse correction, Copernicus GLO-90 DEM, GIBS, Moon/Mars Trek) directly to offloading rigs, thermal shrouds, and EVA traverses.',
+              'Topography, geology, environment and resources all matter, and the open data to compare them (Earth, Moon, Mars) sits in separate portals.',
           },
           {
-            heading: 'Open-Source Mission Readiness',
+            heading: 'Our goal',
             detail:
-              'Browser-native React + TypeScript engineering workbench with verified baseline datasets and downloadable Field Test Calibration Protocols.',
+              'Use open NASA and partner data to identify new terrestrial analogs, then characterize any of them well enough to plan a field test.',
           },
         ],
-        highlightStat: { value: 'TRL 4 -> 6', label: 'Accelerated Field Qualification' },
+        highlightStat: { value: 'AETHER-SIM', label: 'Analog Finder + Characterization Workbench' },
         speakerNote:
-          '0:00-0:05: Hello NASA Space Apps Judges. This is AETHER-SIM — a physical similitude, 4D seasonal window, and 1:1 traverse twinning engine for Moon and Mars analog testing.',
+          '0:00-0:20: Teams test rovers, drills and suits on Earth before they fly, but the usual analog sites are a short list and many are not well characterized. The challenge asks us to identify new ones using open Earth, Moon and Mars data. We are ArgentinaSpace, and this is AETHER-SIM.',
       },
       {
         number: 2,
-        tag: 'SLIDE 02 / 07 // THE ENGINEERING GAP',
-        title: 'The "Single-Site Fallacy" & The "Earth-Lie" Distortion',
+        tag: 'SLIDE 02 / 07 // ANALOG FINDER',
+        title: 'Analog Finder: new candidate analogs, starting in our own backyard',
         subtitle:
-          'Most analog tools drop static pins on deserts. Real aerospace test campaigns fail when three physical realities are ignored:',
+          'Scan a region grid, rank every cell against the selected Moon or Mars target, and flag candidates far from any catalogued analog.',
         bullets: [
           {
-            heading: '1. The "Earth-Lie" Physics Distortion',
+            heading: 'Start with the Puna de Atacama (Salta / Catamarca)',
             detail:
-              'Testing flight hardware under 9.81 m/s^2 gravity instead of 1.62 m/s^2 (Moon) or 3.72 m/s^2 (Mars) induces multi-fold Bekker-Wong wheel sinkage errors, while Earth air extracts convective heat absent in lunar vacuum.',
+              'A high, dry, volcanic plateau in NW Argentina. Presets also cover the Atacama in Chile, the Bolivian Altiplano and Iceland, or scan the current map view.',
           },
           {
-            heading: '2. 4D Temporal Decay & Grid Elevation Bias',
+            heading: 'Ranked candidates, with NEW flags',
             detail:
-              'Monsoon moisture ruins Ground Penetrating Radar contrast, and coarse 0.5 deg weather grids misrepresent steep mountain/basin testbeds unless corrected via ISA tropospheric lapse-rate and DEM elevation.',
+              'Each grid cell gets an Analog Similarity Index. Candidates more than 60 km from any catalogued analog are marked NEW and drawn on the map.',
           },
           {
-            heading: '3. Single-Site Blind Spots',
+            heading: 'One click to characterize',
             detail:
-              'No terrestrial site replicates 100% of planetary geomorphology, regolith mechanics, hypobaric thermal dynamics, geochemistry, and astrobiology simultaneously.',
+              'A bundled Puna scan snapshot loads instantly; "Re-scan live" refreshes it. Any candidate can be sent into the characterization pipeline.',
+          },
+        ],
+        highlightStat: { value: 'NEW', label: 'Candidates >60 km from catalogued analogs' },
+        speakerNote:
+          '0:20-0:55: The Analog Finder is the core of the project. It scans a region, scores every cell against the Moon or Mars target you pick, ranks the results, and flags candidates that are more than sixty kilometres from any catalogued analog. We start in our backyard, the Puna of Salta and Catamarca, and a saved scan loads instantly so nothing depends on the network. One click sends a candidate into full characterization.',
+      },
+      {
+        number: 3,
+        tag: 'SLIDE 03 / 07 // HOW THE INDEX WORKS',
+        title: 'A transparent screening index built on open data',
+        subtitle:
+          'The Analog Similarity Index is a heuristic with hand-chosen, visible weights. It ranks candidates for follow-up; it is not a validated predictor.',
+        bullets: [
+          {
+            heading: 'Six factors, target-dependent weights',
+            detail:
+              'Low surface pressure, thermal proximity, aridity, diurnal thermal swing, insolation, and terrain slope match. Weights change with the Moon or Mars target.',
+          },
+          {
+            heading: 'NASA POWER climatology + Copernicus GLO-90 DEM',
+            detail:
+              'Temperature, humidity, precipitation, pressure and insolation come live from NASA POWER. Elevation and slope come from the ESA Copernicus GLO-90 DEM (about 90 m), accessed via Open-Meteo. Climatology is lapse-rate corrected to DEM elevation.',
+          },
+          {
+            heading: 'Context layers: NASA GIBS, Moon Trek, Mars Trek',
+            detail:
+              'Earth imagery from NASA GIBS and Moon/Mars imagery from NASA Solar System Treks sit side by side. Planetary reference profiles come from LOLA/MOLA-derived literature.',
+          },
+        ],
+        highlightStat: { value: '6 factors', label: 'Transparent heuristic weights' },
+        speakerNote:
+          '0:55-1:30: The index combines six factors: low pressure, thermal proximity, aridity, day-night temperature swing, insolation and terrain slope. The weights are hand-chosen, visible, and depend on whether the target is the Moon or Mars. It is a screening index, not a validated predictor. Inputs are NASA POWER climatology and the Copernicus ninety-metre elevation model, with NASA GIBS, Moon Trek and Mars Trek for imagery.',
+      },
+      {
+        number: 4,
+        tag: 'SLIDE 04 / 07 // CHARACTERIZATION',
+        title: 'Traverse twin and seasonal window for any site',
+        subtitle: `Characterization shown for ${selectedSite.name} against ${selectedTarget.shortName}. Works for 10 curated sites (including Llullaillaco, Salar de Arizaro and Campo de Piedra Pomez) or any clicked coordinate.`,
+        bullets: [
+          {
+            heading: '2 km traverse comparison',
+            detail:
+              'Real Copernicus DEM transect on Earth against a real planetary profile sampled from the LRO LOLA (118 m/px) or MGS MOLA (463 m/px) global DEM. Compares elevation gain, maximum slope, roughness (RMSE) and rover energy per km.',
+          },
+          {
+            heading: '12-month seasonal validity matrix',
+            detail:
+              'NASA POWER climatology with ISA lapse-rate correction, evaluated over five sensor and operations disciplines (GPR, cryo-drilling, rover traction, EVA, optical/LiDAR) to show which months suit a test.',
+          },
+          {
+            heading: 'Dual map view',
+            detail:
+              'Earth site and Moon/Mars target side by side using NASA GIBS and NASA Moon/Mars Trek layers.',
+          },
+        ],
+        highlightStat: { value: '2.0 km', label: 'Earth DEM vs. planetary reference profile' },
+        speakerNote:
+          '1:30-2:00: Once a site is chosen, we characterize it. We compare a two kilometre Earth traverse from the Copernicus elevation model against a planetary reference profile, and we build a twelve month matrix from NASA POWER climatology that shows which months suit radar, drilling, rover or suit tests. This works for our curated Puna sites or any coordinate you click.',
+      },
+      {
+        number: 5,
+        tag: 'SLIDE 05 / 07 // FROM SITE TO TEST PLAN',
+        title: 'Physics calibration and campaign export',
+        subtitle: `First-order calibration computed live for ${selectedSite.name} simulating ${selectedTarget.shortName}:`,
+        bullets: [
+          {
+            heading: 'Gravity offload',
+            detail: `Requires about ${calibration.offloadRatioPct}% vertical offload (${calibration.offloadMassKg} kg / ${calibration.offloadForceNewtons} N) at local g = ${calibration.earthGravityMs2} m/s^2.`,
+          },
+          {
+            heading: 'Bekker-Wong sinkage and convective bias',
+            detail: `Modelled target sinkage ${calibration.targetSinkageMm} mm vs. ${calibration.earthUncompensatedSinkageMm} mm uncompensated on Earth. Convective bias +${calibration.convectiveBiasWm2K} W/m^2K (${calibration.parasiticHeatLossWatts} W) suggests an insulation target of R = ${calibration.requiredThermalShroudRValue} m^2K/W.`,
+          },
+          {
+            heading: 'Campaign optimizer and export',
+            detail: `Pairs ${triad.primary.site.name}, ${triad.secondary.site.name} and ${triad.tertiary.site.name} to cover gaps a single site leaves (heuristic coverage ${triad.singleSiteCoveragePct}% to ${triad.triadCompositeCoveragePct}%). Exports a Markdown or JSON test protocol. Radiation, dust charging and vacuum effects still need chamber tests.`,
           },
         ],
         highlightStat: {
           value: `${calibration.sinkageDistortionRatio}x`,
-          label: `Live 1g Sinkage Error (${selectedTarget.body})`,
+          label: `Modelled 1g sinkage ratio (${selectedTarget.body})`,
         },
         speakerNote:
-          '0:05-0:10: Static desert pins ignore the Earth-Lie: 1g gravity breaks Bekker-Wong sinkage, Earth air steals convective heat, and coarse weather grids distort mountain and basin sites.',
-      },
-      {
-        number: 3,
-        tag: 'SLIDE 03 / 07 // SYSTEM ARCHITECTURE',
-        title: 'Multi-Agency Satellite Fusion & Honest Data Provenance',
-        subtitle:
-          'Every terrestrial profile and climatology curve is sourced from live APIs and peer-reviewed planetary publications.',
-        bullets: [
-          {
-            heading: 'Verified Earth Telemetry + ISA Lapse Correction',
-            detail:
-              'NASA POWER 12-month climatology is reconciled against real 21-point 2.0 km Copernicus GLO-90 DEM elevations using -6.5 C/km tropospheric lapse-rate and hypsometric pressure scaling.',
-          },
-          {
-            heading: 'Orbital Imagery & Literature-Anchored Planetary Targets',
-            detail:
-              'NASA GIBS WMTS (Blue Marble, LST, ASTER GDEM) paired with Moon/Mars Trek WMTS scaled by true body radius (1,737.4 km / 3,389.5 km) and target traverses parameterized from published LOLA, NAC, and Perseverance/Curiosity sections.',
-          },
-          {
-            heading: 'Space Agency Context',
-            detail:
-              'Integrates CONAE SAOCOM 1A/1B L-band SAR penetration context, ESA Sentinel-2 / ExoMars, and JAXA SELENE references.',
-          },
-        ],
-        highlightStat: { value: '10 + 6', label: 'Verified Earth DEMs & Target Citations' },
-        speakerNote:
-          '0:10-0:15: AETHER-SIM combines NASA POWER with ISA lapse correction, real Copernicus 90m elevation profiles, NASA GIBS, Moon and Mars Trek, and published CONAE, ESA, and JAXA mission references.',
-      },
-      {
-        number: 4,
-        tag: 'SLIDE 04 / 07 // MODULE 3: PHYSICS ENGINE',
-        title: 'The "Earth-Lie" Similitude & Calibration Engine',
-        subtitle: `Live hardware calibration computed for ${selectedSite.name} simulating ${selectedTarget.shortName}:`,
-        bullets: [
-          {
-            heading: 'Gravitational Mass Offloading (WGS84 + Free-Air)',
-            detail: `Requires ${calibration.offloadRatioPct}% vertical offload (${calibration.offloadMassKg} kg / ${calibration.offloadForceNewtons} N) at g = ${calibration.earthGravityMs2} m/s^2.`,
-          },
-          {
-            heading: 'Bekker-Wong Sinkage & McAdams Convective Bias',
-            detail: `Target sinkage ${calibration.targetSinkageMm} mm vs. ${calibration.earthUncompensatedSinkageMm} mm raw Earth; McAdams convective bias +${calibration.convectiveBiasWm2K} W/m^2K (${calibration.parasiticHeatLossWatts} W loss) mitigated with R = ${calibration.requiredThermalShroudRValue} m^2K/W MLI shroud.`,
-          },
-          {
-            heading: 'Explicit Unmitigable Field Limitations',
-            detail:
-              'Flags GCR/SPE ionizing radiation, photo-electrostatic levitating dust, UHV cold-welding, and micrometeoroids that require chamber/accelerator co-tests.',
-          },
-        ],
-        highlightStat: {
-          value: `${calibration.offloadRatioPct}%`,
-          label: `Active Gimbal Offload (${selectedTarget.body})`,
-        },
-        speakerNote:
-          '0:15-0:20: Our Physics Calibration Lab computes exact gimbal offloading, Bekker-Wong wheel sinkage compensation, thermal shroud R-values, and flags unmitigable radiation and vacuum limits.',
-      },
-      {
-        number: 5,
-        tag: 'SLIDE 05 / 07 // MODULES 2 & 4',
-        title: '1:1 Traverse Twinning & 4D Seasonal Validity Windows',
-        subtitle:
-          'Rehearsing planetary climbs with Pandolf (1977) EVA energetics and picking valid months per sensor discipline.',
-        bullets: [
-          {
-            heading: '2.0 km DEM-Verified Traverse Twinning',
-            detail:
-              'Overlays published Moon/Mars 2.0 km target elevation and slope sections against real Copernicus GLO-90 Earth transects, computing rover Wh/km and Santee-scaled Pandolf (1977) EVA kcal/hr.',
-          },
-          {
-            heading: '4D Month-by-Month Sensor Matrix',
-            detail:
-              'Evaluates 5 mission disciplines (GPR Radar, Cryo-Drilling, Rover Traction, Spacesuit EVA, Optical LiDAR) across Jan-Dec under unified engineering thresholds.',
-          },
-          {
-            heading: 'One-Click TRL Field Protocol Export',
-            detail:
-              'Outputs formatted Markdown & JSON calibration protocols ready for mission engineering review.',
-          },
-        ],
-        highlightStat: { value: '2.0 km', label: 'Copernicus DEM vs. Mission Section' },
-        speakerNote:
-          '0:20-0:25: Crews align 2.0 km planetary climbs against real Copernicus DEM Earth transects, check Pandolf EVA metabolic rates, inspect a 12-month heatmap, and export protocols in one click.',
+          '2:00-2:30: A good site is only useful if you can plan a test there. The calibration lab estimates how much weight to offload to mimic Moon or Mars gravity, how wheel sinkage changes, and how much extra heat Earth air steals. These are first-order models. The campaign optimizer then pairs three sites and exports a Markdown or JSON protocol. We are explicit that radiation, dust and vacuum still need chamber tests.',
       },
       {
         number: 6,
-        tag: 'SLIDE 06 / 07 // LIVE TRIAD CAMPAIGN CASE STUDY',
-        title: `Live Triad Campaign: ${selectedSite.name} -> ${selectedTarget.shortName}`,
-        subtitle:
-          'Hardware-weighted Triad optimization pairing complementary terrestrial analogs to close single-site gaps:',
+        tag: 'SLIDE 06 / 07 // IMPACT & LIMITS',
+        title: 'Impact, users, and honest limitations',
+        subtitle: 'A screening and planning aid that points teams to places worth a closer look.',
         bullets: [
           {
-            heading: `Phase 1 — ${triad.primary.site.name} (${triad.primary.site.elevationM} m, ${triad.primary.site.pressureMbar} mbar)`,
-            detail: `${triad.primary.role}. Optimal window: ${triad.primary.bestWindowMonths.join('/')} (${triad.primary.meanPeakFidelity}% peak).`,
+            heading: 'Who it helps',
+            detail:
+              'University rover and instrument teams, analog field-campaign planners, and educators who need a short list of Earth sites with open, reproducible justification. Local teams gain visibility of high-altitude terrain close to home.',
           },
           {
-            heading: `Phase 2 — ${triad.secondary.site.name} (${triad.secondary.site.elevationM} m)`,
-            detail: `${triad.secondary.role}. Optimal window: ${triad.secondary.bestWindowMonths.join('/')} (${triad.secondary.meanPeakFidelity}% peak).`,
+            heading: 'Why it matters',
+            detail:
+              'Open data and a transparent index make it cheap to widen the search for analogs beyond the few famous sites, and to document why a site was chosen.',
           },
           {
-            heading: `Phase 3 — ${triad.tertiary.site.name} (${triad.tertiary.site.elevationM} m)`,
-            detail: `Completes end-member testing (${triad.tertiary.bestWindowMonths.join('/')}), lifting weighted 5-axis coverage from ${triad.singleSiteCoveragePct}% to ${triad.triadCompositeCoveragePct}% (+${triad.coverageGainPct} pts).`,
+            heading: 'Limitations we state up front',
+            detail:
+              'The index is a heuristic screening tool, not validated against field campaigns. POWER is a coarse reanalysis grid and GLO-90 is about 90 m. Planetary profiles come from global DEMs (LOLA 118 m/px, MOLA 463 m/px), so Mars slopes are coarse. No field validation, and no endorsement by any space agency.',
           },
         ],
-        highlightStat: {
-          value: `${triad.singleSiteCoveragePct}% -> ${triad.triadCompositeCoveragePct}%`,
-          label: 'Live Hardware-Weighted 5-Axis Coverage',
-        },
+        highlightStat: { value: 'Open', label: 'Open data, open code, Apache 2.0' },
         speakerNote:
-          '0:25-0:28: Combining complementary terrestrial analogs in our hardware-weighted Triad Optimizer lifts 5-axis mission coverage while scheduling each phase in its optimal seasonal window.',
+          '2:30-2:50: Who benefits? University rover and instrument teams, field-campaign planners and educators, who get a short, reproducible list of candidate sites. The limits matter: the index is a heuristic and not validated against field campaigns, the climate grid is coarse, the planetary profiles come from literature, and nothing here is endorsed by any space agency.',
       },
       {
         number: 7,
-        tag: 'SLIDE 07 / 07 // IMPACT & ROADMAP',
-        title: 'Impact, Open-Source Apache 2.0 & Artemis/Mars Roadmap',
-        subtitle:
-          'An extensible calibration standard for NASA centers, commercial CLPS providers, and university rover teams.',
+        tag: 'SLIDE 07 / 07 // WHAT IS NEXT',
+        title: 'What is next, and thank you',
+        subtitle: 'Team ArgentinaSpace, NASA Space Apps Salta 2026.',
         bullets: [
           {
-            heading: 'Immediate Cost & Schedule Impact',
+            heading: 'Ground-truth the index',
             detail:
-              'Prevents failed field deployments caused by wrong seasonal moisture windows, grid-altitude mismatches, or uncalibrated 1g terramechanics.',
+              'Compare rankings with expert-curated analog lists and with field measurements from partner teams in Salta and Catamarca.',
           },
           {
-            heading: 'Planet-Wide Live Probing',
+            heading: 'Richer planetary and Earth data',
             detail:
-              'Click anywhere on Earth to probe live NASA POWER + Copernicus DEM grids and generate a calibrated field protocol in seconds.',
+              'Ingest LOLA and MOLA elevation profiles directly, add geology and mineralogy layers, and extend scans to caves, lava tubes and polar terrain.',
           },
           {
-            heading: 'Next Roadmap Milestones (Apache 2.0)',
+            heading: 'Try it',
             detail:
-              'Direct PDS LOLA/MOLA GeoTIFF profile ingestion, ROS2 / Gazebo gravity-offload bridge, and automated Vitest regression verification.',
+              'Live demo: gabriel-alejandropereagarcia.github.io/aether-sim. Code: github.com/gabriel-alejandropereagarcia/aether-sim (Apache 2.0).',
           },
         ],
-        highlightStat: { value: 'Apache 2.0', label: 'Open-Source Aerospace Calibration Tool' },
+        highlightStat: { value: 'Thank you', label: 'ArgentinaSpace // Salta 2026' },
         speakerNote:
-          '0:28-0:30: AETHER-SIM turns real satellite elevation and climatology feeds into calibrated Artemis and Mars field readiness. Thank you.',
+          '2:50-3:00: Next we want to compare the index with expert analog lists and field data, ingest LOLA and MOLA profiles directly, and extend the search to caves and polar terrain. The app and code are open. Thank you from team ArgentinaSpace.',
       },
     ],
     [selectedSite, selectedTarget, calibration, triad],
@@ -298,7 +291,7 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({
             }`}
           >
             <Mic className="h-3.5 w-3.5" />
-            <span>30s Video Script</span>
+            <span>3-Min Pitch Notes</span>
           </button>
 
           <button
@@ -361,7 +354,7 @@ export const PitchDeckModal: React.FC<PitchDeckModalProps> = ({
           {showNotes && (
             <div className="mt-6 rounded-lg border border-emerald-500/35 bg-emerald-950/20 px-4 py-3">
               <div className="font-mono text-[10px] font-bold uppercase tracking-widest text-emerald-300">
-                Voiceover Script Cue (30-Second Pitch)
+                Speaker Notes (about 3 minutes total)
               </div>
               <p className="mt-1 text-xs leading-relaxed text-emerald-100">{slide.speakerNote}</p>
             </div>

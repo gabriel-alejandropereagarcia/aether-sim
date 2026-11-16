@@ -290,8 +290,8 @@ export function computePandolfEvaKcalPerHr(
 }
 
 /**
- * Computes full Earth-Lie Physics Transfer & Calibration metrics.
- * Fidelity scores are derived strictly from physical residuals (zero arbitrary boost).
+ * Computes first-order Earth-vs-target physics calibration metrics.
+ * Fidelity scores are heuristic indices built from physical residuals with hand-chosen scaling factors.
  */
 export function computeSimilitudeCalibration(
   hardware: HardwareSpecs,
@@ -420,7 +420,7 @@ export function computeSimilitudeCalibration(
     Math.max(0, parasiticHeatLossWatts * 0.88 - hardware.powerWatts * 0.15),
   );
 
-  // Residual-based Similitude Fidelity (zero arbitrary offsets)
+  // Residual-based heuristic fidelity index
   const baseSiteScore =
     (site.fidelityScores.geomorphology +
       site.fidelityScores.regolithMechanics +
@@ -541,7 +541,7 @@ export function computeSimilitudeCalibration(
 }
 
 /**
- * Computes 1:1 2.0 km geometric traverse alignment, slope similarity,
+ * Computes 2.0 km geometric traverse alignment, slope similarity,
  * rover specific energy (Wh/km), and Pandolf (1977) EVA metabolic expenditure (kcal/hr).
  */
 export function computeTraverseComparison(
@@ -596,7 +596,7 @@ export function computeTraverseComparison(
     const targetRoverWhPerKm = Number(((targetForceN * 1000) / (3600 * mechEff) + hotelWhPerKm).toFixed(1));
     const earthRoverWhPerKm = Number(((earthForceN * 1000) / (3600 * mechEff) + hotelWhPerKm).toFixed(1));
 
-    // Authentic Pandolf (1977) + Santee (2001) EVA metabolic load (decoupled from rover hardware mass)
+    // Pandolf (1977)-based + Santee (2001) EVA metabolic load (decoupled from rover hardware mass)
     const suitMass = hardware.systemType === 'EVA_SUIT' ? hardware.massKg : 120;
     const targetEvaKcalPerHr = computePandolfEvaKcalPerHr(
       tPt.slopeDeg,
@@ -888,7 +888,7 @@ export function optimizeTriadCampaign(
   };
 
   const axesDef: { label: string; key: keyof EarthAnalogSite['fidelityScores'] }[] = [
-    { label: 'Geomorphology & 1:1 Traverse', key: 'geomorphology' },
+    { label: 'Geomorphology & Traverse', key: 'geomorphology' },
     { label: 'Regolith Terramechanics', key: 'regolithMechanics' },
     { label: 'Thermal & Barometric', key: 'thermalAtmosphere' },
     { label: 'Geochemistry & Dielectric', key: 'geochemistryDielectric' },
@@ -970,7 +970,7 @@ export function generateFieldProtocolMarkdown(
 
 ---
 
-## 1. EARTH-LIE PHYSICS CALIBRATION PARAMETERS
+## 1. PHYSICS CALIBRATION PARAMETERS (FIRST-ORDER MODELS)
 - **Local Earth Gravity (WGS84 + Free-Air):** ${similitude.earthGravityMs2} m/s^2 vs. Target ${similitude.targetGravityMs2} m/s^2
 - **Required Gravity Offloading:** **${similitude.offloadRatioPct}%** (${similitude.offloadMassKg} kg counterweight / ${similitude.offloadForceNewtons} N vertical gimbal offload)
 - **Bekker-Wong Wheel/Footprint Sinkage (z0, b = ${hardware.wheelWidthCm} cm):**
@@ -984,7 +984,7 @@ export function generateFieldProtocolMarkdown(
   - Required MLI/Aerogel Shroud Resistance: **R = ${similitude.requiredThermalShroudRValue} m^2K/W**
   - Active Make-Up Heater Compensation: **${similitude.activeMakeUpHeaterWatts} W**
 
-## 2. 1:1 GEOMETRIC TRAVERSE TWINNING (2.0 KM PROFILE)
+## 2. TRAVERSE PROFILE COMPARISON (2.0 KM)
 - **Elevation Gain:** Target **${traverse.targetGainM} m** vs. Copernicus DEM Analog **${traverse.earthGainM} m**
 - **Maximum Slope:** Target **${traverse.targetMaxSlopeDeg}°** vs. Earth Analog **${traverse.earthMaxSlopeDeg}°**
 - **Topographic Profile RMSE:** **${traverse.elevationRmseM} m** | Slope Similarity: **${traverse.slopeSimilarityPct}%**

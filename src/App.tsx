@@ -19,7 +19,9 @@ import {
   fetchNasaPowerClimatology,
 } from './services/nasaPowerClient';
 import { HeaderBar } from './components/HeaderBar';
-import { DualPlanetaryMap } from './components/DualPlanetaryMap';
+import { DualPlanetaryMap, MapScanCandidate } from './components/DualPlanetaryMap';
+import { AnalogFinderPanel } from './components/AnalogFinderPanel';
+import type { ScanBbox } from './engine/analogFinder';
 import { TraverseProfiler } from './components/TraverseProfiler';
 import { PhysicsCalibrationLab } from './components/PhysicsCalibrationLab';
 import { SeasonalValidityMatrix } from './components/SeasonalValidityMatrix';
@@ -64,6 +66,14 @@ export const App: React.FC = () => {
     if (typeof window === 'undefined') return false;
     return window.location.hash === '#deck' || window.location.pathname.endsWith('/deck');
   });
+
+  // Analog Finder: scan overlay for the Earth map + latest Earth map view bounds (ref: no re-render on pan)
+  const [scanDisplay, setScanDisplay] = useState<{ bbox: ScanBbox; candidates: MapScanCandidate[] } | null>(null);
+  const earthViewBboxRef = useRef<ScanBbox | null>(null);
+  const handleEarthBoundsChange = useCallback((bbox: ScanBbox) => {
+    earthViewBboxRef.current = bbox;
+  }, []);
+  const getEarthViewBbox = useCallback(() => earthViewBboxRef.current, []);
 
   const probeRequestIdRef = useRef<number>(0);
   const probeAbortRef = useRef<AbortController | null>(null);
@@ -289,13 +299,24 @@ export const App: React.FC = () => {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-cyan-300">
-                RESIDUAL SIMILITUDE SCORE (RAW 1g -&gt; POST-RIG):{' '}
+                HEURISTIC INDEX (RAW 1g -&gt; POST-RIG):{' '}
                 <strong>
                   {calibration.uncompensatedFidelityScore}% -&gt; {calibration.calibratedFidelityScore}%
                 </strong>
               </span>
             </div>
           </div>
+
+          {/* DISCOVER: Analog Finder regional scan (rows / markers reuse the probe flow) */}
+          <AnalogFinderPanel
+            selectedTarget={selectedTarget}
+            curatedSites={sites}
+            selectedSiteId={selectedSite.id}
+            onProbeCoordinate={handleProbeCoordinate}
+            getEarthViewBbox={getEarthViewBbox}
+            onScanDisplayChange={setScanDisplay}
+            isProbing={powerStatus === 'FETCHING'}
+          />
 
           {/* Module 1: Dual Planetary Command Map & Custom Coordinate Probe */}
           <DualPlanetaryMap
@@ -307,16 +328,19 @@ export const App: React.FC = () => {
             onProbeCoordinate={handleProbeCoordinate}
             isProbing={powerStatus === 'FETCHING'}
             powerEndpointUrl={powerEndpointUrl}
+            scanBbox={scanDisplay?.bbox ?? null}
+            scanCandidates={scanDisplay?.candidates}
+            onEarthBoundsChange={handleEarthBoundsChange}
           />
 
-          {/* Module 2: 1:1 Traverse Twinning Profiler */}
+          {/* Module 2: Traverse Profile Comparison */}
           <TraverseProfiler
             site={selectedSite}
             target={selectedTarget}
             comparison={traverseComparison}
           />
 
-          {/* Module 3: The "Earth-Lie" Physics Similitude & Hardware Calibration Lab */}
+          {/* Module 3: Physics Calibration Lab */}
           <PhysicsCalibrationLab
             hardware={hardware}
             onChangeHardware={setHardware}
@@ -342,10 +366,10 @@ export const App: React.FC = () => {
           <div className="mx-auto flex max-w-[1640px] flex-col justify-between gap-2 text-xs text-slate-400 md:flex-row md:items-center">
             <div>
               <p className="font-mono text-[11px] font-semibold text-slate-200">
-                AETHER-SIM v2.1 | Open-Source Apache 2.0 | NASA Space Apps 2026 Challenge Entry
+                AETHER-SIM v2.2 | Open-Source Apache 2.0 | NASA Space Apps 2026 Challenge Entry
               </p>
               <p className="mt-0.5 text-[11px] text-slate-400">
-                Verified Feeds: NASA POWER API (ISA Lapse-Corrected), ESA Copernicus GLO-90 DEM, NASA GIBS WMTS, NASA Moon/Mars Trek WMTS, and peer-reviewed LOLA/MOLA/CONAE/ESA/JAXA literature.
+                Data feeds: NASA POWER (ISA lapse-corrected), ESA Copernicus GLO-90 DEM, NASA GIBS, NASA Moon/Mars Trek, LRO LOLA (118 m/px) and MGS MOLA (463 m/px) global DEMs via USGS Astrogeology. All indices are heuristic screening scores.
               </p>
             </div>
             <div className="rounded-md border border-cyan-500/30 bg-cyan-950/20 px-3 py-1.5 font-mono text-[10px] text-cyan-200">

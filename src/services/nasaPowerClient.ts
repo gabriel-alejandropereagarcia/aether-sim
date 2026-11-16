@@ -62,6 +62,49 @@ export function buildEarth2KmCoords(
   });
 }
 
+export const NASA_POWER_CLIMATOLOGY_PARAMETERS =
+  'T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,WS10M,RH2M,PS';
+
+/** NASA POWER climatology point endpoint (same request used by the probe and the region scan). */
+export function buildNasaPowerClimatologyUrl(lat: number, lon: number): string {
+  const clampedLat = Math.max(-89.9, Math.min(89.9, lat));
+  const clampedLon = Math.max(-179.9, Math.min(179.9, lon));
+  return (
+    `https://power.larc.nasa.gov/api/temporal/climatology/point` +
+    `?parameters=${NASA_POWER_CLIMATOLOGY_PARAMETERS}` +
+    `&community=RE&longitude=${clampedLon.toFixed(4)}&latitude=${clampedLat.toFixed(4)}&format=JSON`
+  );
+}
+
+/**
+ * Strict parser for a NASA POWER climatology payload: returns null when any monthly value
+ * is missing or a fill value (<= -900), instead of substituting synthetic numbers.
+ */
+export function parseNasaPowerClimatologyStrict(
+  powerJson: unknown,
+): { rawClimatology: MonthlyClimatology; powerGridElevationM: number } | null {
+  const json = powerJson as {
+    geometry?: { coordinates?: unknown[] };
+    properties?: { parameter?: Record<string, Record<string, unknown>> };
+  } | null;
+  const params = json?.properties?.parameter;
+  const gridElev = json?.geometry?.coordinates?.[2];
+  if (!params || typeof gridElev !== 'number' || !Number.isFinite(gridElev)) return null;
+  const keys = NASA_POWER_CLIMATOLOGY_PARAMETERS.split(',') as (keyof MonthlyClimatology)[];
+  const out = {} as MonthlyClimatology;
+  for (const key of keys) {
+    const block = params[key];
+    const arr: number[] = [];
+    for (const month of MONTHS_SHORT) {
+      const v = block?.[month];
+      if (typeof v !== 'number' || !Number.isFinite(v) || v <= -900) return null;
+      arr.push(Number(v.toFixed(2)));
+    }
+    out[key] = arr;
+  }
+  return { rawClimatology: out, powerGridElevationM: Number(gridElev.toFixed(1)) };
+}
+
 function parseMonthlyArray(
   paramBlock: Record<string, number> | undefined,
   fallbackArray?: number[],
@@ -131,10 +174,7 @@ export async function fetchNasaPowerClimatology(
   const clampedLat = Math.max(-89.9, Math.min(89.9, lat));
   const clampedLon = Math.max(-179.9, Math.min(179.9, lon));
 
-  const endpointUrl =
-    `https://power.larc.nasa.gov/api/temporal/climatology/point` +
-    `?parameters=T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,ALLSKY_SFC_SW_DWN,WS10M,RH2M,PS` +
-    `&community=RE&longitude=${clampedLon.toFixed(4)}&latitude=${clampedLat.toFixed(4)}&format=JSON`;
+  const endpointUrl = buildNasaPowerClimatologyUrl(clampedLat, clampedLon);
 
   const startedAt = performance.now();
   const controller = new AbortController();
@@ -260,6 +300,61 @@ export async function fetchNasaPowerClimatology(
   }
 }
 
+/** Upper bound shared with the curated-site fidelity formulas (planetaryData deriveFidelityScores). */
+export const PROBE_FIDELITY_MAX = 96;
+
+/**
+ * Continuous, telemetry-only fidelity scores for an uncatalogued probe (no random seeds,
+ * no hard per-axis caps below the curated catalogue). Every axis can reach PROBE_FIDELITY_MAX (96),
+ * the same ceiling as the curated formulas, so a genuinely extreme (high, cold, hyper-arid) site
+ * is not structurally ranked below the curated ones.
+ *
+ *   arid  = 0.6 * clamp(1 - P/3) + 0.4 * clamp((80 - RH)/70)        P = mean precip mm/day, RH = mean RH2M %
+ *   cold  = clamp((10 - Tmean)/25)                                    Tmean = ISA-corrected annual mean T2M (C)
+ *   thermalAtmosphere      = clamp(22 + min(48, 48*max(0,z)/5200) + cryo + max(0, 14 - 6P - 0.2*max(0, RH-40)), 25, 96)
+ *                            cryo = Tmean < 5 ? min(38, 1.45*(5 - Tmean)) : max(0, 16 - 0.7*(Tmean - 5))
+ *                            (identical to the curated-site thermal formula; z = DEM elevation m)
+ *   geomorphology          = clamp(56 + min(28, 1.8*maxSlope) + min(12, relief2km/15), 35, 96)
+ *                            (curated formula with a DEM-relief term instead of a hand-set geology bonus)
+ *   regolithMechanics      = clamp(50 + 46*arid, 35, 96)              dry unconsolidated surface proxy
+ *   geochemistryDielectric = clamp(40 + 56*arid, 22, 96)              low-moisture dielectric proxy
+ *   astrobiology           = clamp(30 + 40*arid + 26*cold, 22, 96)    low water-activity proxy
+ * The regolith/geochemistry/astrobiology axes are climate PROXIES (not measured) and the probe
+ * mineralogy/regolith text says so.
+ */
+export function deriveProbeFidelityScores(input: {
+  elevationM: number;
+  meanTempC: number;
+  meanPrecipMmDay: number;
+  meanRhPct: number;
+  maxAbsSlopeDeg: number;
+  traverseReliefM: number;
+}): EarthAnalogSite['fidelityScores'] {
+  const c01 = (v: number) => (Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0);
+  const clampScore = (v: number, lo: number) =>
+    Math.round(Math.min(PROBE_FIDELITY_MAX, Math.max(lo, Number.isFinite(v) ? v : lo)));
+  const { elevationM, meanTempC, meanPrecipMmDay: p, meanRhPct: rh, maxAbsSlopeDeg, traverseReliefM } = input;
+
+  const arid = 0.6 * c01(1 - p / 3) + 0.4 * c01((80 - rh) / 70);
+  const cold = c01((10 - meanTempC) / 25);
+
+  const altThermal = Math.min(48, (Math.max(0, elevationM) / 5200) * 48);
+  const cryo =
+    meanTempC < 5 ? Math.min(38, (5 - meanTempC) * 1.45) : Math.max(0, 16 - (meanTempC - 5) * 0.7);
+  const aridThermal = Math.max(0, 14 - p * 6 - Math.max(0, rh - 40) * 0.2);
+
+  return {
+    geomorphology: clampScore(
+      56 + Math.min(28, maxAbsSlopeDeg * 1.8) + Math.min(12, Math.max(0, traverseReliefM) / 15),
+      35,
+    ),
+    regolithMechanics: clampScore(50 + 46 * arid, 35),
+    thermalAtmosphere: clampScore(22 + altThermal + cryo + aridThermal, 25),
+    geochemistryDielectric: clampScore(40 + 56 * arid, 22),
+    astrobiology: clampScore(30 + 40 * arid + 26 * cold, 22),
+  };
+}
+
 /**
  * Generates an EarthAnalogSite from a live NASA POWER + Copernicus DEM coordinate probe.
  */
@@ -290,22 +385,17 @@ export function createCustomProbeSite(
           { 0: 'Probe Point (DEM Offline)' },
         );
 
-  // Derive scores strictly from observed physical telemetry (no random seeds)
-  const thermalScore = Math.round(
-    Math.min(
-      95,
-      Math.max(20, 38 + (isHighAlt ? 28 : 0) + (isCryo ? 22 : 0) - Math.max(0, meanTemp - 10) * 1.2),
-    ),
-  );
-  const geoChemScore = Math.round(
-    Math.min(92, Math.max(22, 85 - meanPrecip * 14 - Math.max(0, meanRh - 30) * 0.45)),
-  );
   const maxSlope = Math.max(...points.map((p) => Math.abs(p.slopeDeg)));
-  const geomorScore = Math.round(Math.min(90, Math.max(35, 55 + Math.min(30, maxSlope * 2.1))));
-  const mechScore = Math.round(Math.min(88, Math.max(35, 58 + (isHyperArid ? 20 : 4))));
-  const astroScore = Math.round(
-    Math.min(92, Math.max(22, 40 + (isHyperArid ? 30 : 0) + (isCryo ? 18 : 0))),
-  );
+  const traverseElevs = points.map((p) => p.elevationM);
+  const traverseReliefM = Math.max(...traverseElevs) - Math.min(...traverseElevs);
+  const fidelityScores = deriveProbeFidelityScores({
+    elevationM,
+    meanTempC: meanTemp,
+    meanPrecipMmDay: meanPrecip,
+    meanRhPct: meanRh,
+    maxAbsSlopeDeg: maxSlope,
+    traverseReliefM,
+  });
 
   return {
     id: `custom-probe-${lat.toFixed(2)}-${lon.toFixed(2)}`,
@@ -361,13 +451,7 @@ export function createCustomProbeSite(
     rawGridClimatology: rawClimatology,
     climatology,
     traverse: points,
-    fidelityScores: {
-      geomorphology: geomorScore,
-      regolithMechanics: mechScore,
-      thermalAtmosphere: thermalScore,
-      geochemistryDielectric: geoChemScore,
-      astrobiology: astroScore,
-    },
+    fidelityScores,
     fieldLogistics: {
       nearestBase: `Grid Cell (${lat.toFixed(2)}, ${lon.toFixed(2)})`,
       accessDifficulty: 'Site-Specific Reconnaissance Required',
